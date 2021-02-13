@@ -1,26 +1,28 @@
 {
   "files": {
-    "main.css": "/static/css/main.8c8b27cf.chunk.css",
-    "main.js": "/static/js/main.5a2b4504.chunk.js",
-    "main.js.map": "/static/js/main.5a2b4504.chunk.js.map",
-    "runtime-main.js": "/static/js/runtime-main.8b1113bd.js",
-    "runtime-main.js.map": "/static/js/runtime-main.8b1113bd.js.map",
-    "static/css/2.658248ec.chunk.css": "/static/css/2.658248ec.chunk.css",
-    "static/js/2.07d41d1d.chunk.js": "/static/js/2.07d41d1d.chunk.js",
-    "static/js/2.07d41d1d.chunk.js.map": "/static/js/2.07d41d1d.chunk.js.map",
-    "static/js/3.cdf047c3.chunk.js": "/static/js/3.cdf047c3.chunk.js",
-    "static/js/3.cdf047c3.chunk.js.map": "/static/js/3.cdf047c3.chunk.js.map",
+    "main.css": "/static/css/main.68037500.chunk.css",
+    "main.js": "/static/js/main.2975338f.chunk.js",
+    "main.js.map": "/static/js/main.2975338f.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.b9f77702.js",
+    "runtime-main.js.map": "/static/js/runtime-main.b9f77702.js.map",
+    "static/css/2.b4ce4ec5.chunk.css": "/static/css/2.b4ce4ec5.chunk.css",
+    "static/js/2.8d0cee5e.chunk.js": "/static/js/2.8d0cee5e.chunk.js",
+    "static/js/2.8d0cee5e.chunk.js.map": "/static/js/2.8d0cee5e.chunk.js.map",
+    "static/js/3.0718089d.chunk.js": "/static/js/3.0718089d.chunk.js",
+    "static/js/3.0718089d.chunk.js.map": "/static/js/3.0718089d.chunk.js.map",
     "index.html": "/index.html",
-    "static/css/2.658248ec.chunk.css.map": "/static/css/2.658248ec.chunk.css.map",
-    "static/css/main.8c8b27cf.chunk.css.map": "/static/css/main.8c8b27cf.chunk.css.map",
-    "static/js/2.07d41d1d.chunk.js.LICENSE.txt": "/static/js/2.07d41d1d.chunk.js.LICENSE.txt",
-    "static/media/ObservatoryPark.ba50a4b1.jpg": "/static/media/ObservatoryPark.ba50a4b1.jpg"
+    "precache-manifest.45d399bdc8e5787084d462f2423f1e1b.js": "/precache-manifest.45d399bdc8e5787084d462f2423f1e1b.js",
+    "service-worker.js": "/service-worker.js",
+    "static/css/2.b4ce4ec5.chunk.css.map": "/static/css/2.b4ce4ec5.chunk.css.map",
+    "static/css/main.68037500.chunk.css.map": "/static/css/main.68037500.chunk.css.map",
+    "static/js/2.8d0cee5e.chunk.js.LICENSE.txt": "/static/js/2.8d0cee5e.chunk.js.LICENSE.txt",
+    "static/media/ObservatoryPark.jpg": "/static/media/ObservatoryPark.43b07364.jpg"
   },
   "entrypoints": [
-    "static/js/runtime-main.8b1113bd.js",
-    "static/css/2.658248ec.chunk.css",
-    "static/js/2.07d41d1d.chunk.js",
-    "static/css/main.8c8b27cf.chunk.css",
-    "static/js/main.5a2b4504.chunk.js"
+    "static/js/runtime-main.b9f77702.js",
+    "static/css/2.b4ce4ec5.chunk.css",
+    "static/js/2.8d0cee5e.chunk.js",
+    "static/css/main.68037500.chunk.css",
+    "static/js/main.2975338f.chunk.js"
   ]
 }
