@@ -1,0 +1,28 @@
+import {
+    Box,
+    Card,
+    Image,
+    Heading,
+    Text,
+    Flex,
+    Link
+} from 'rebass';
+
+export const ghPages = "https://docs.github.com/en/github/working-with-github-pages"
+export const cra = "https://create-react-app.dev/"
+export const htdi = "https://create-react-app.dev/docs/deployment#github-pages"
+export const spagh = "https://github.com/rafgraph/spa-github-pages"
+export const mdxhp = "https://mdxjs.com/"
+export const mdxig = "https://mdxjs.com/getting-started#installation-guides"
+
+####
+#### The why
+
+
+I bumped into docs on github talking about hosting static sites on <Link href={ghPages}>git hub pages</Link> or even creating a blog using Jekyll. I explored Jekyll and quickly realized I had no interest in learning Ruby just to create a blog site and wondered if I could do it with React (a technology I'm much more familiar with).
+
+Turns out you can with a couple of caveats - first you will want to use a module called git hub pages - second you need to add in a little hack to make react router work.  So after searching around on the internet I found several helpful examples but ultimately realized that the fine folks who maintain the <Link href={cra}>create-react-app</Link> also tell you pretty much <Link href={cra}>how to do it</Link>.
+
+The one not so obvious part is the hack you have to do to your index.html file and the 404.html page. This <Link href={spagh}>page</Link> explains it well with the gist of it being you add the 404 page given to your public folder and add a redirect script to your index.html file. When git hub refuses to route it calls 404 with everything you need to route and your redirect script routes it.  It's then in the history and all is well next time you navigate to a menu item.  Seems to work fine so going with it.
+
+The next thing I wanted to do was use a combination of Markdown and React to I could have the freedom to write content in something as friendly as Markdown and still be able to use React for making stuff a little prettier and more functional.  No shortage on options but what seemed friendliest was <Link href={mdxhp}>MDX</Link> and as it turns out they give you a scaffolding for your favorite framework  <Link href={mdxig}>here</Link>.

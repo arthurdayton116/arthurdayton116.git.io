@@ -1,34 +1,48 @@
 {
-  "name": "create-react-app-mdx",
+  "name": "arthurdayton116.git.io",
   "version": "1.0.0",
   "private": true,
+  "homepage": "https://arthurdayton116.github.io",
   "scripts": {
     "build": "react-scripts build",
     "eject": "react-scripts eject",
     "start": "react-scripts start",
-    "test": "react-scripts test"
+    "test": "react-scripts test",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -b main -d build"
   },
   "dependencies": {
+    "@emotion/react": "^11.1.5",
+    "@rebass/preset": "^4.0.5",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "bootstrap": "^4.6.0",
+    "emotion-theming": "^11.0.0",
+    "gh-pages": "^3.1.0",
     "mdx.macro": "^0.2.9",
     "react": "^16.13.1",
+    "react-bootstrap": "^1.4.3",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.3"
+    "react-scripts": "^3.4.4",
+    "rebass": "^4.0.7",
+    "styled-components": "^5.2.1"
+  },
+  "nodemonConfig": {
+    "ignore": ["test/*", "docs/*"],
+    "delay": "2500",
+    "ext": "mdx"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
   },
   "browserslist": [
     ">0.2%",
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ],
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "jsx",
-      "ts",
-      "tsx",
-      "node",
-      "macro"
-    ]
-  }
+  ]
 }

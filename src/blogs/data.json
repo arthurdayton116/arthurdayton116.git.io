@@ -1,0 +1,13 @@
+[
+    {
+      "id": 1,
+      "title": "How to set up a Git Hub Pages Blog Site Using React and MDX",
+      "body": "Here comes some information",
+      "postLink": "../blogs/1"
+    },
+    {
+      "id": 2,
+      "title": "Create a VPC",
+      "body": "Here comes some AWS information"
+    }
+]
