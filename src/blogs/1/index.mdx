@@ -14,15 +14,44 @@ export const htdi = "https://create-react-app.dev/docs/deployment#github-pages"
 export const spagh = "https://github.com/rafgraph/spa-github-pages"
 export const mdxhp = "https://mdxjs.com/"
 export const mdxig = "https://mdxjs.com/getting-started#installation-guides"
+export const rebasshp = "https://rebassjs.org/"
+export const rebasstoc = "https://mdxjs.com/getting-started#table-of-components"
+export const mdxcraissue = "https://github.com/facebook/create-react-app/issues/5580"
+export const rcb = "https://github.com/rajinwonderland/react-code-blocks"
+export const daCodeBranch = "https://github.com/arthurdayton116/arthurdayton116.github.io/tree/daCode"
+export const mainBranch = "https://github.com/arthurdayton116/arthurdayton116.github.io/tree/main"
 
 ####
 #### The why
 
+I bumped into docs on github talking about hosting static sites on <Link href={ghPages} target="_blank">git hub pages</Link> or even creating a blog using Jekyll. I explored Jekyll and quickly realized I had no interest in learning Ruby just to create a blog site and wondered if I could do it with React (a technology I'm much more familiar with).
 
-I bumped into docs on github talking about hosting static sites on <Link href={ghPages}>git hub pages</Link> or even creating a blog using Jekyll. I explored Jekyll and quickly realized I had no interest in learning Ruby just to create a blog site and wondered if I could do it with React (a technology I'm much more familiar with).
+#### The how
 
-Turns out you can with a couple of caveats - first you will want to use a module called git hub pages - second you need to add in a little hack to make react router work.  So after searching around on the internet I found several helpful examples but ultimately realized that the fine folks who maintain the <Link href={cra}>create-react-app</Link> also tell you pretty much <Link href={cra}>how to do it</Link>.
+Turns out you can with a couple of caveats - first you will want to use a module called git hub pages - second you need to add in a little hack to make react router work.  So after searching around on the internet I found several helpful examples but ultimately realized that the fine folks who maintain the <Link href={cra} target="_blank">create-react-app</Link> also tell you pretty much <Link href={cra} target="_blank">how to do it</Link>.
 
-The one not so obvious part is the hack you have to do to your index.html file and the 404.html page. This <Link href={spagh}>page</Link> explains it well with the gist of it being you add the 404 page given to your public folder and add a redirect script to your index.html file. When git hub refuses to route it calls 404 with everything you need to route and your redirect script routes it.  It's then in the history and all is well next time you navigate to a menu item.  Seems to work fine so going with it.
+The one not so obvious part is the hack you have to do to your index.html file and the 404.html page. This <Link href={spagh} target="_blank">page</Link> explains it well with the gist of it being you add the 404 page given to your public folder and add a redirect script to your index.html file. When git hub refuses to route it calls 404 with everything you need to route and your redirect script routes it.  It's then in the history and all is well next time you navigate to a menu item.  Seems to work fine so going with it.
 
-The next thing I wanted to do was use a combination of Markdown and React to I could have the freedom to write content in something as friendly as Markdown and still be able to use React for making stuff a little prettier and more functional.  No shortage on options but what seemed friendliest was <Link href={mdxhp}>MDX</Link> and as it turns out they give you a scaffolding for your favorite framework  <Link href={mdxig}>here</Link>.
+The next thing I wanted to do was use a combination of Markdown and React to I could have the freedom to write content in something as friendly as Markdown and still be able to use React for making stuff a little prettier and more functional.  No shortage on options but what seemed friendliest was <Link href={mdxhp} target="_blank">MDX</Link> and as it turns out they give you a scaffolding for your favorite framework <Link href={mdxig} target="_blank">here</Link>. Ultimately what MDX does is compile your MDX into JSX (magical) and even allows you to substitute your own React components for certain <Link href={rebasstoc} target="_blank">markdown tags</Link>. Towards that end the other thing I really like is being able to use <Link href={rebasshp} target="_blank">Rebass</Link> which essentially allows us to drop pre-styled React components right into our Markdown file (awesome!).  Lastly a code highlighting component brings it home.  I chose <Link href={rcb} target="_blank">this one</Link> and adopted their example.
+
+##### Gotchas
+So like all technology just when you think it's the greatest thing you have ever seen it let's you down a little.
+
+1. So first annoyance I ran into was hot reloading.  Apparently it doesn't watch for mdx files and k=making it act right is a <Link href={mdxcraissue} target="_blank"> known issue</Link>.  I dropped some nodemon on it
+```javascript
+nodemon --watch src start
+```
+&nbsp;&nbsp;&nbsp; and with a little config in package.json
+```json
+"nodemonConfig": {
+  "ignore": ["test/*", "docs/*"],
+  "delay": "2500",
+  "ext": "mdx"
+},
+```
+&nbsp;&nbsp;&nbsp; most of my annoyance is gone but the existing hot reload and nodemon may get in the occasional slap fight and browser cache will seek to do what it does to developers.
+
+2. Second was how to dynamically load blog content.  The importMDX function that is used to import my blog mdx files doesn't let me pass it a variable so all I could figure out to do was create a BlogMDX.js file where I import each blog file and use a switch statement to return the one I want.  Ultimately it's all statically compiled anyway so I figure it works for now until enlightenment is bestowed upon me.
+
+#### Bringing it all home
+Ultimately I end up with two files I have to mainitain alongside by content files a data.json with essentially metadata about each blog post that I use to render my list of posts and then a BlogMDX.js file that imports each mdx and returns the proper one based on blog id.  I push all my code to the <Link href={daCodeBranch} target="_blank">daCode branch</Link> and then I let gh pages push the built code to the <Link href={mainBranch} target="_blank">main branch</Link> where it shows up as my github organization page.

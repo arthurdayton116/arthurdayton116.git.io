@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@emotion/react": "^11.1.5",
+    "@mdx-js/react": "^1.6.22",
     "@rebass/preset": "^4.0.5",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
@@ -23,13 +24,17 @@
     "mdx.macro": "^0.2.9",
     "react": "^16.13.1",
     "react-bootstrap": "^1.4.3",
+    "react-code-blocks": "^0.0.8",
     "react-dom": "^16.13.1",
     "react-scripts": "^3.4.4",
     "rebass": "^4.0.7",
     "styled-components": "^5.2.1"
   },
   "nodemonConfig": {
-    "ignore": ["test/*", "docs/*"],
+    "ignore": [
+      "test/*",
+      "docs/*"
+    ],
     "delay": "2500",
     "ext": "mdx"
   },

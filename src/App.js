@@ -37,6 +37,8 @@ const theme = {
     }
 }
 
+
+
 function App() {
     return (
         <ThemeProvider theme={theme}>
@@ -56,4 +58,9 @@ function App() {
     )
 }
 
+// export default props => (
+//     <MDXProvider components={components}>
+//         <App {...props}></App>
+//     </MDXProvider>
+// )
 export default App
