@@ -7,15 +7,3 @@ import App from './App'
 
 ReactDOM.render(<App />, document.getElementById('root'))
 
-
-// export default function rootLayout({ children }) {
-//     return (
-//         <MDXProvider
-//             components={{
-//                 code: (props) => <CustomCodeBlock {...props} />,
-//             }}
-//         >
-//             {children}
-//         </MDXProvider>
-//     );
-// }

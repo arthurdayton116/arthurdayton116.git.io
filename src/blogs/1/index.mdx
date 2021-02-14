@@ -34,14 +34,58 @@ The one not so obvious part is the hack you have to do to your index.html file a
 
 The next thing I wanted to do was use a combination of Markdown and React to I could have the freedom to write content in something as friendly as Markdown and still be able to use React for making stuff a little prettier and more functional.  No shortage on options but what seemed friendliest was <Link href={mdxhp} target="_blank">MDX</Link> and as it turns out they give you a scaffolding for your favorite framework <Link href={mdxig} target="_blank">here</Link>. Ultimately what MDX does is compile your MDX into JSX (magical) and even allows you to substitute your own React components for certain <Link href={rebasstoc} target="_blank">markdown tags</Link>. Towards that end the other thing I really like is being able to use <Link href={rebasshp} target="_blank">Rebass</Link> which essentially allows us to drop pre-styled React components right into our Markdown file (awesome!).  Lastly a code highlighting component brings it home.  I chose <Link href={rcb} target="_blank">this one</Link> and adopted their example.
 
+To see how I'm using these take a look at Post.js. Lines 8-13 define an object I pass to MDX (line 29) to tell it what React components to use for the corresponding Markdown tags.  This is pretty much Ahh-mazing!
+
+So I can write Markdown but then automagically inject React Components in place of standard Markdown!!!
+
+```Javascript
+import React, {Suspense} from 'react'
+import { Link } from "react-router-dom";
+import { Box, Heading, Text } from 'rebass';
+import blogContent from '../blogs/BlogMDX'
+import CustomCodeBlock from "../components/CodeBlock";
+import {useTheme} from "@emotion/react";
+
+const components = {
+    pre: props => <div {...props} />,
+    code: props => <CustomCodeBlock {...props} />,
+    p: props => <Text ml={4} mt={2} mb={2} {...props} />,
+    h1: props => <Box pl={3} pt={2} pb={2} {...props}><Heading {...props} as={'h1'}/></Box>
+    h4: props => <Box pl={3} pt={2} pb={2} {...props}><Heading {...props} as={'h4'}/></Box>
+    h5: props => <Box pl={3} pt={2} pb={2} {...props}><Heading {...props} as={'h5'}/></Box>
+}
+
+export const Post = (props) => {
+    const post = props.history.location.state.post;
+    const Content = blogContent(post.id)
+    const theme = useTheme()
+
+  return (
+    <div>
+      <Link to="/blog/">{'<'} Back</Link>
+        <Box p={4} >
+            <Box pl={3} pt={2} pb={2} bg={theme.colors.primary}>
+                <Heading as={'h1'} >{post.title}</Heading>
+            </Box>
+            <Box pt={2} pl={4}>
+                <Suspense fallback={<div>Loading...</div>}>
+                    <Content components={components} post={post}/>
+                </Suspense>
+            </Box>
+        </Box>
+    </div>
+  )
+}
+```
+
 ##### Gotchas
 So like all technology just when you think it's the greatest thing you have ever seen it let's you down a little.
 
-1. So first annoyance I ran into was hot reloading.  Apparently it doesn't watch for mdx files and k=making it act right is a <Link href={mdxcraissue} target="_blank"> known issue</Link>.  I dropped some nodemon on it
+1. So first annoyance I ran into was hot reloading.  Apparently it doesn't watch for mdx files and making it act right is a <Link href={mdxcraissue} target="_blank"> known issue</Link>.  I dropped some nodemon on it
 ```javascript
 nodemon --watch src start
 ```
-&nbsp;&nbsp;&nbsp; and with a little config in package.json
+ and with a little config in package.json
 ```json
 "nodemonConfig": {
   "ignore": ["test/*", "docs/*"],
@@ -49,9 +93,31 @@ nodemon --watch src start
   "ext": "mdx"
 },
 ```
-&nbsp;&nbsp;&nbsp; most of my annoyance is gone but the existing hot reload and nodemon may get in the occasional slap fight and browser cache will seek to do what it does to developers.
+most of my annoyance is gone but the existing hot reload and nodemon may get in the occasional slap fight and browser cache will seek to do what it does to developers.
 
-2. Second was how to dynamically load blog content.  The importMDX function that is used to import my blog mdx files doesn't let me pass it a variable so all I could figure out to do was create a BlogMDX.js file where I import each blog file and use a switch statement to return the one I want.  Ultimately it's all statically compiled anyway so I figure it works for now until enlightenment is bestowed upon me.
+2. Second was how to dynamically load blog content.  The importMDX function that is used to import my blog mdx files doesn't let me pass it a variable so all I could figure out to do was create a BlogMDX.js file where I import each blog file and use a switch statement to return the one I want.
+```
+import {lazy} from "react";
+import {importMDX} from "mdx.macro";
+
+const blog1 = lazy(() => importMDX('../blogs/1/index.mdx'))
+const blog2 = lazy(() => importMDX('../blogs/2/index.mdx'))
+
+const blogContent = (id) => {
+    switch(id) {
+        case 1:
+            return blog1;
+        case 2:
+            return blog2;
+        default:
+            return 'problem'
+    }
+};
+
+export default blogContent;
+
+```
+Ultimately it's all statically compiled anyway so I figure it works for now until enlightenment is bestowed upon me.
 
 #### Bringing it all home
-Ultimately I end up with two files I have to mainitain alongside by content files a data.json with essentially metadata about each blog post that I use to render my list of posts and then a BlogMDX.js file that imports each mdx and returns the proper one based on blog id.  I push all my code to the <Link href={daCodeBranch} target="_blank">daCode branch</Link> and then I let gh pages push the built code to the <Link href={mainBranch} target="_blank">main branch</Link> where it shows up as my github organization page.
+Ultimately I end up with two files I have to maintain alongside by content files a data.json with essentially metadata about each blog post that I use to render my list of posts and then a BlogMDX.js file that imports each mdx and returns the proper one based on blog id.  I push all my code to the <Link href={daCodeBranch} target="_blank">daCode branch</Link> and then I let gh pages push the built code to the <Link href={mainBranch} target="_blank">main branch</Link> where it shows up as my github organization page.

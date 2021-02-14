@@ -8,36 +8,7 @@ import { Blogs } from './components/Blog';
 import { Post } from './components/Post';
 import { ThemeProvider } from '@emotion/react';
 
-
-const theme = {
-    fontSizes: [
-        12, 14, 16, 24, 32, 48, 64
-    ],
-    colors: {
-        primary: '#07c',
-        gray: '#f6f6ff',
-    },
-    buttons: {
-        primary: {
-            color: 'blue',
-            bg: 'primary',
-        },
-        outline: {
-            color: 'primary',
-            bg: 'transparent',
-            boxShadow: 'inset 0 0 0 2px'
-        },
-    },
-    variants : {
-      avatar: {
-        width: 48,
-        height: 48,
-        borderRadius: 9999,
-      }
-    }
-}
-
-
+import theme from './components/Theme'
 
 function App() {
     return (
