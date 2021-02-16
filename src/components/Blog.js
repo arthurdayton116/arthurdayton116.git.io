@@ -24,7 +24,6 @@ export const Blogs = () => {
             <div>
                     <h1>Posts</h1>
                     <br />
-                    All Posts:
                     <ul>
                             {data.map(post => (
                                 <li key={post.id}>

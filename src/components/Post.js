@@ -29,7 +29,7 @@ export const Post = (props) => {
         h1: props => <Box pl={3} pt={2} pb={2} {...props}><Heading {...props} as={'h1'}/></Box>,
         h4: props => <Box pl={3} pt={2} pb={2} {...props}><Heading sx={h4Sx} {...props} as={'h4'}/></Box>,
         h5: props => <Box pl={3} pt={2} pb={2} {...props}><Heading {...props} as={'h5'}/></Box>,
-        li: props => <Box  pl={2} display='inline-block' { ...props}></Box>
+        li: props => <Box ml={4}><li { ...props}></li></Box>
     }
 
     const linkSX = {
