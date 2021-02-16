@@ -2,9 +2,22 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+main branch contains deployed build code for gh pages and daCode branch has the code used to create it
+
 ## Available Scripts
 
 In the project directory, you can run:
+
+### `nodemon --watch src start`
+Starts with file watching on mdx
+
+### `npm run predeploy`
+Builds it for gh pages
+
+You need to change package.json - Change from - "homepage": "https://arthurdayton116.github.io" To your repo.
+
+### `npm run deploy`
+Pushes it to main branch
 
 ### `npm start`
 

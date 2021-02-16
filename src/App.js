@@ -1,5 +1,5 @@
 import React from 'react'
-import 'bootstrap/dist/css/bootstrap.css';
+// import 'bootstrap/dist/css/bootstrap.css';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { NavigationBar } from './components/NavigationBar';
 import { About } from './components/About';
@@ -7,8 +7,8 @@ import { NoMatch } from './components/NoMatch';
 import { Blogs } from './components/Blog';
 import { Post } from './components/Post';
 import { ThemeProvider } from '@emotion/react';
-
 import theme from './components/Theme'
+import { Box } from "rebass";
 
 function App() {
     return (
@@ -16,6 +16,7 @@ function App() {
             <React.Fragment>
               <Router>
                       <NavigationBar />
+                      <Box pl={4}>
                       <Switch>
                           <Route exact path="/" component={About} />
                           <Route path="/about" component={About} />
@@ -23,6 +24,7 @@ function App() {
                           <Route path="/post/*" component={Post} />
                           <Route component={NoMatch} />
                       </Switch>
+                      </Box>
               </Router>
           </React.Fragment>
         </ThemeProvider>

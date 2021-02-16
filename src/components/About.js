@@ -8,8 +8,7 @@ const Content = lazy(() => importMDX('../mdx/About.mdx'))
      const theme = useTheme()
      return (
          <Suspense fallback={<div>Loading...</div>}>
-             <Content daProp={'yeayeayea'}
-                      theme={theme}
+             <Content theme={theme}
                       logo={avatar}
              />
          </Suspense>
