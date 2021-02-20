@@ -463,10 +463,15 @@ Then we can take a look at the AWS Console to see the results of our terraform r
 <Image p={4} verticalAlign='middle' src={props.images.ROUTE_TABLE_MAIN_IMAGE} />
 
 <br/>
+
 As we can see all our resources were created.
+
 <br/>
+
 To clean it all up again we can just run destroy:
+
 <br/>
+
 ```json
 terraform destroy -auto-approve
 aws_route_table_association.rta_subnet_public: Destroying... [id=rtbassoc-050d74f6db753bd09]
