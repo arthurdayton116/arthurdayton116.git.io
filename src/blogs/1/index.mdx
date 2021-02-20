@@ -42,6 +42,8 @@ To see how I'm using these take a look at Post.js. Lines 8-13 define an object I
 
 I can write Markdown and then automagically inject React Components in place of standard Markdown 😲!!!
 
+[Markdown Cheatsheet](https://guides.github.com/pdfs/markdown-cheatsheet-online.pdf)
+
 ```javascript
 import React, {Suspense} from 'react'
 import { Link } from "react-router-dom";
@@ -123,12 +125,24 @@ const blogContent = (id) => {
 export default blogContent;
 
 ```
-When your app is compiled by ```npm run predeploy``` it's all statically compiled so it works for now ... until further enlightenment is bestowed upon me.
+
+I do ths same thing with images but will leave it to you to see what's happening there. (Hint look at images.js in blogs and Post.js)
+<br/>
+<br/>
+
+When your app is compiled by
+```javascript
+npm run predeploy
+```
+it's all statically compiled so it works for now ... until further enlightenment is bestowed upon me.
+
+<br/>
 
 #### Bringing it all home
 Ultimately I end up with two files I maintain alongside my content files:
+<br/>
+A data.json with essentially metadata about each blog post that I use to render my list of posts.
 
-1. A data.json with essentially metadata about each blog post that I use to render my list of posts.
-1. A BlogMDX.js file that imports each mdx and returns the proper one based on blog id.
+- A BlogMDX.js file that imports each mdx and returns the proper one based on blog id.
 
-I push all my code to the <Link href={daCodeBranch} target="_blank">daCode branch</Link> and then I let github pages push the built code to the <Link href={mainBranch} target="_blank">main branch</Link> where it shows up as my github organization page.
+- I push all my code to the <Link href={daCodeBranch} target="_blank">daCode branch</Link> and then I let github pages push the built code to the <Link href={mainBranch} target="_blank">main branch</Link> where it shows up as my github organization page.

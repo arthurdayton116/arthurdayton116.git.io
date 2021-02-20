@@ -1,14 +1,14 @@
 import React, {Suspense} from 'react'
 import { Box, Heading, Text, Link } from 'rebass';
-import blogContent from '../blogs/BlogMDX'
+import blogContent from '../blogs/BlogMDX';
+import blogImages from '../blogs/images';
 import CustomCodeBlock from "../components/CodeBlock";
 import {useTheme} from "@emotion/react";
-
-
 
 export const Post = (props) => {
     const post = props.history.location.state.post;
     const Content = blogContent(post.id)
+    const Images = blogImages(post.id)
     const theme = useTheme()
 
     const h1Sx={
@@ -29,7 +29,12 @@ export const Post = (props) => {
         h1: props => <Box pl={3} pt={2} pb={2} {...props}><Heading {...props} as={'h1'}/></Box>,
         h4: props => <Box pl={3} pt={2} pb={2} {...props}><Heading sx={h4Sx} {...props} as={'h4'}/></Box>,
         h5: props => <Box pl={3} pt={2} pb={2} {...props}><Heading {...props} as={'h5'}/></Box>,
-        li: props => <Box ml={4}><li { ...props}></li></Box>
+        // li: props => ,
+        ul: props => <ul { ...props} style={{listStyleType: 'square'}} >
+            <Box ml={4}><li ><span { ...props} style={{paddingLeft: '0em'}}></span></li></Box>
+        </ul>,
+        ol: props => <ol { ...props} >
+        </ol>
     }
 
     const linkSX = {
@@ -53,7 +58,7 @@ export const Post = (props) => {
             </Box>
             <Box pt={2} pl={4}>
                 <Suspense fallback={<div>Loading...</div>}>
-                    <Content components={components} post={post}/>
+                    <Content components={components} post={post} images={Images}/>
                 </Suspense>
             </Box>
         </Box>

@@ -18,7 +18,7 @@ function App() {
                       <NavigationBar />
                       <Box pl={4}>
                       <Switch>
-                          <Route exact path="/" component={About} />
+                          <Route exact path="/" component={Blogs} />
                           <Route path="/about" component={About} />
                           <Route path="/blog" component={Blogs} />
                           <Route path="/post/*" component={Post} />
