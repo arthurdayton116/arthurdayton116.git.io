@@ -11,6 +11,7 @@ export const Blogs = () => {
         color: theme.h4.text,
         fontFamily: theme.fontFamily,
     }
+
     const linkSX = {
         color: theme.navbar.background,
         fontWeight: 'bold',
