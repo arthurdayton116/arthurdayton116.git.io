@@ -3,10 +3,6 @@ import { Image, Flex, Box, Link } from 'rebass';
 import logo from '../assets/ObservatoryPark.jpg';
 import {useTheme} from "@emotion/react";
 
-
-const scale = 5
-const pw = 27.2 * scale
-const ph = 18.5 * scale
 export const NavigationBar = (props) => {
     const theme = useTheme()
     const linkSX = {
@@ -28,11 +24,9 @@ export const NavigationBar = (props) => {
             alignItems='center'>
             <Image
                 src={logo}
-                width={pw}
-                height={ph}
                 sx={{
-                    width: {pw},
-                    height: {ph},
+                    width: theme.navbar.imageWidth,
+                    height: theme.navbar.imageHeight,
                     borderRadius: 0,
                 }}
             />

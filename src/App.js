@@ -14,8 +14,9 @@ function App() {
     return (
         <ThemeProvider theme={theme}>
             <React.Fragment>
+                <Box style={{'position':'fixed', 'width': '100%'}}><NavigationBar  /></Box>
+                <Box sx={{height: theme.navbar.imageHeight}}/>
               <Router>
-                      <NavigationBar />
                       <Box pl={[2,2,4]}>
                       <Switch>
                           <Route exact path="/" component={Blogs} />
@@ -31,9 +32,4 @@ function App() {
     )
 }
 
-// export default props => (
-//     <MDXProvider components={components}>
-//         <App {...props}></App>
-//     </MDXProvider>
-// )
 export default App

@@ -5,6 +5,9 @@ const primarydarkshade2 = '#6EA2C4'
 const primarytext = '#e9ecf5'
 const primarytexthover = '#ccd6eb'
 const primaryFontFamily = 'Arial, sans-serif'
+const scale = 5
+const pw = 27.2 * scale
+const ph = 18.5 * scale
 
 export default {
     breakpoints: ['599px','900px','1200px'],
@@ -20,6 +23,8 @@ export default {
         background: primarybackground,
         text: primarytext,
         hover: primarytexthover,
+        imageHeight: ph,
+        imageWidth: pw,
     },
     h1: {
         text: primarydarkshade2,
