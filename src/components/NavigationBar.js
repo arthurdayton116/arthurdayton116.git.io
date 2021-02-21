@@ -22,7 +22,7 @@ export const NavigationBar = (props) => {
     };
 
     return (
-        <Box pb={4}>
+        <Box pb={[2,2,4]}>
         <Flex
             bg={theme.navbar.background}
             alignItems='center'>

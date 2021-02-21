@@ -7,6 +7,7 @@ const primarytexthover = '#ccd6eb'
 const primaryFontFamily = 'Arial, sans-serif'
 
 export default {
+    breakpoints: ['599px','900px','1200px'],
     fontSizes: [
         12, 14, 16, 24, 32, 48, 64
     ],

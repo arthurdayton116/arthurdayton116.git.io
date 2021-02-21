@@ -16,7 +16,7 @@ function App() {
             <React.Fragment>
               <Router>
                       <NavigationBar />
-                      <Box pl={4}>
+                      <Box pl={[2,2,4]}>
                       <Switch>
                           <Route exact path="/" component={Blogs} />
                           <Route path="/about" component={About} />
