@@ -7,10 +7,6 @@ import {useTheme} from "@emotion/react";
 
 export const Blogs = () => {
     const theme = useTheme()
-    const h1Sx={
-        color: theme.h4.text,
-        fontFamily: theme.fontFamily,
-    }
 
     const linkSX = {
         color: theme.navbar.background,
@@ -27,7 +23,7 @@ export const Blogs = () => {
     console.log(data)
         return (
             <div>
-                <Heading as={'h1'} sx={h1Sx}>Posts</Heading>
+                <Heading as={'h1'} sx={theme.h1Sx}>Posts</Heading>
                     <ul>
                             {data.map(post => (
                                 <li key={post.id}>

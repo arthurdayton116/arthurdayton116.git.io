@@ -10,11 +10,8 @@ export const Post = (props) => {
     const Content = blogContent(post.id)
     const Images = blogImages(post.id)
     const theme = useTheme()
-
-    const h1Sx={
-        color: theme.h4.text,
-        fontFamily: theme.fontFamily,
-    }
+    const mlArr = [0,2,4]
+    const plArr = [0,2,3]
 
     const h4Sx={
         color: theme.h1.text,
@@ -22,9 +19,9 @@ export const Post = (props) => {
     }
 
     const codeBlockSx={
-        pt: [2,2,4],
-        pb: [2,2,4],
-        pl: [0,2,3],
+        pt: mlArr,
+        pb: mlArr,
+        pl: plArr,
         fontSize: ['.75em','1.5em','1.5em'],
     }
 
@@ -32,13 +29,12 @@ export const Post = (props) => {
     const components = {
         pre: props => <div {...props} />,
         code: props => <Box sx={codeBlockSx}><CustomCodeBlock {...props} /></Box>,
-        p: props => <Text ml={[0,2,4]} mt={2} mb={2} {...props} />,
-        h1: props => <Box pl={[0,2,3]} pt={2} pb={2} {...props}><Heading {...props} as={'h1'}/></Box>,
-        h4: props => <Box pl={[0,2,3]} pt={2} pb={2} {...props}><Heading sx={h4Sx} {...props} as={'h4'}/></Box>,
-        h5: props => <Box pl={[0,2,3]} pt={2} pb={2} {...props}><Heading {...props} as={'h5'}/></Box>,
-        // li: props => ,
+        p: props => <Text ml={mlArr} mt={2} mb={2} {...props} />,
+        h1: props => <Box pl={plArr} pt={2} pb={2} {...props}><Heading {...props} as={'h1'}/></Box>,
+        h4: props => <Box pl={plArr} pt={2} pb={2} {...props}><Heading sx={h4Sx} {...props} as={'h4'}/></Box>,
+        h5: props => <Box pl={plArr} pt={2} pb={2} {...props}><Heading {...props} as={'h5'}/></Box>,
         ul: props => <ul { ...props} style={{listStyleType: 'square'}} >
-            <Box ml={[0,2,4]}><li ><span { ...props} style={{paddingLeft: '0em'}}></span></li></Box>
+            <Box ml={mlArr}><span { ...props} style={{paddingLeft: '0em'}}></span></Box>
         </ul>,
         ol: props => <ol { ...props} >
         </ol>
@@ -59,11 +55,11 @@ export const Post = (props) => {
   return (
     <div>
       <Link href="/blog/" sx={linkSX}>{'<'} Back</Link>
-        <Box p={[0,2,4]} fontFamily='arial'>
-            <Box pl={[0,2,4]} pt={[0,2,4]} pb={[0,2,4]} bg={theme.colors.pale}>
-                <Heading as={'h1'} sx={h1Sx}>{post.title}</Heading>
+        <Box p={mlArr} fontFamily='arial'>
+            <Box pl={mlArr} pt={mlArr} pb={mlArr} bg={theme.colors.pale}>
+                <Heading as={'h1'} sx={theme.h1Sx}>{post.title}</Heading>
             </Box>
-            <Box pt={2} pl={[0,2,4]}>
+            <Box pt={2} pl={mlArr}>
                 <Suspense fallback={<div>Loading...</div>}>
                     <Content components={components} post={post} images={Images}/>
                 </Suspense>

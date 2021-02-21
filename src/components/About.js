@@ -24,15 +24,14 @@ import {
          ml: [0,0,2]
      }
      const h1Sx={
-         color: theme.h4.text,
-         fontFamily: theme.fontFamily,
+         ...theme.h1Sx,
          fontSize: [5,6,7],
          pb: 2,
          pt: 2,
      }
 
      return (
-         // <Box>
+         <Box>
          <Flex flexWrap='wrap' p={[0,1,2]}>
              <Box sx={{width: ['1', '1/2', '1/2'],
                  display: ['flex','',''],
@@ -69,10 +68,7 @@ import {
              </Box>
 
          </Flex>
-
+     <SocialIcon url="https://www.linkedin.com/in/arthurdayton/" />
+         </Box>
      )}
 
-{/*<Box>*/}
-{/*    <SocialIcon url="https://www.linkedin.com/in/arthurdayton/" />*/}
-{/*</Box>*/}
-// </Box>

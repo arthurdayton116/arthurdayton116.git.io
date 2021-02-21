@@ -24,6 +24,10 @@ export default {
     h1: {
         text: primarydarkshade2,
     },
+    h1Sx: {
+        color: primarydarkshade1,
+        fontFamily: primaryFontFamily,
+    },
     h4: {
         text: primarydarkshade1,
     },
