@@ -7,28 +7,14 @@ import {useTheme} from "@emotion/react";
 
 export const Blogs = () => {
     const theme = useTheme()
-
-    const linkSX = {
-        color: theme.navbar.background,
-        fontWeight: 'bold',
-        fontSize: '1em',
-        textDecoration: 'none',
-        padding: 3,
-        ':hover': {
-            color: theme.navbar.hover,
-            fontWeight: 900,
-        }
-    };
-
-    console.log(data)
         return (
             <div>
                 <Heading as={'h1'} sx={theme.h1Sx}>Posts</Heading>
                     <ul>
                             {data.map(post => (
                                 <li key={post.id}>
-                                    <Box sx={linkSX}>
-                                        <Link style={linkSX} to={
+                                    <Box sx={theme.linkSXAlt1}>
+                                        <Link style={theme.linkSXAlt1} to={
                                             {
                                                 pathname: `/post/${post.id}/`,
                                                 state: {

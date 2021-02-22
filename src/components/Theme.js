@@ -2,12 +2,13 @@
 const primarybackground = '#a3c3d9'
 const primarydarkshade1 = '#305873'
 const primarydarkshade2 = '#6EA2C4'
+const primarytextdarkshade1 = '#566DB3'
 const primarytext = '#e9ecf5'
 const primarytexthover = '#ccd6eb'
 const primaryFontFamily = 'Arial, sans-serif'
-const scale = 5
-const pw = 27.2 * scale
-const ph = 18.5 * scale
+
+const pw = 27.2
+const ph = 18.5
 
 export default {
     breakpoints: ['599px','900px','1200px'],
@@ -23,8 +24,44 @@ export default {
         background: primarybackground,
         text: primarytext,
         hover: primarytexthover,
-        imageHeight: ph,
-        imageWidth: pw,
+        imageHeight: [(ph*2),(ph*4),(ph*5)],
+        imageWidth: [(pw*2),(pw*4),(pw*5)],
+    },
+    linkSX: {
+        color: primarytext,
+        fontWeight: 'bold',
+        fontSize: '1.5em',
+        textDecoration: 'none',
+        padding: [1,3,3],
+        ':hover': {
+            color: primarytexthover,
+            fontWeight: 900,
+        }
+    },
+    linkSXAlt1: {
+        color: primarybackground,
+        fontWeight: 'bold',
+        fontSize: '1em',
+        textDecoration: 'none',
+        padding: 3,
+        ':hover': {
+            color: primarytexthover,
+            fontWeight: 900,
+        }
+    },
+    linkSXAlt2: {
+        color: primarytextdarkshade1,
+        fontWeight: 'bold',
+        fontSize: '1em',
+        textDecoration: 'none',
+        padding: 3,
+        ':hover': {
+            color: primarytexthover,
+            fontWeight: 900,
+        }
+    },
+    menuIcon: {
+        size: ['20','30','40'],
     },
     h1: {
         text: primarydarkshade2,
