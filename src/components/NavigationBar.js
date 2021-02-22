@@ -36,7 +36,7 @@ export const NavigationBar = (props) => {
             ><FaBars /></Box>
         </Flex>
             <Box bg={theme.navbar.hover} display={displayVar}>
-                <Flex flexWrap='wrap' alignItems='right'>
+                <Flex flexWrap='wrap' textAlign='right'>
                     <Box width={'100%'} p={2}>
                         <Link variant='nav' href='/blog'  sx={theme.linkSXAlt2} onClick={() =>toggleDisplayVar('none')}>Blog</Link>
                     </Box>
