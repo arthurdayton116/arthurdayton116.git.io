@@ -4,7 +4,7 @@ import blogContent from '../blogs/BlogMDX';
 import blogImages from '../blogs/images';
 import CustomCodeBlock from "../components/CodeBlock";
 import {useTheme} from "@emotion/react";
-import postData  from '../blogs/data';
+import {postData}  from '../blogs/data';
 import NoMatch from '../components/NoMatch'
 
 export const Post = (props) => {
@@ -42,7 +42,8 @@ export const Post = (props) => {
         return el !== "";
     });
 
-    const post = props.history.location.state ? props.history.location.state.post : postData(pathArr[pathArr.length-1])
+    const dataIndex = pathArr[pathArr.length-1]
+    const post = (typeof(props.history.location.state) != 'undefined') ? props.history.location.state.post : postData(dataIndex)
 
     const Content = post ? blogContent(post.id) : ''
     const Images = post ? blogImages(post.id) : ''

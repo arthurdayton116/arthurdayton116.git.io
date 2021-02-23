@@ -1,9 +1,9 @@
 import data from '../blogs/data.json';
 
-const postData = (id) => {
+export const postData = (postID) => {
     return data.filter((obj) => {
-        return obj.id === id
+        // eslint-disable-next-line
+        return obj.id == postID
     })[0]
 }
 
-export default postData;
