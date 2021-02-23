@@ -41,9 +41,9 @@ export default {
     linkSXAlt1: {
         color: primarybackground,
         fontWeight: 'bold',
-        fontSize: '1em',
+        fontSize: ['1em','1em','1.5em'],
         textDecoration: 'none',
-        padding: 3,
+        p: [1,2,3],
         ':hover': {
             color: primarytexthover,
             fontWeight: 900,
@@ -69,6 +69,11 @@ export default {
     h1Sx: {
         color: primarydarkshade1,
         fontFamily: primaryFontFamily,
+    },
+    h5Sx: {
+        color: primarydarkshade2,
+        fontFamily: primaryFontFamily,
+        fontSize: '.75em',
     },
     h4: {
         text: primarydarkshade1,

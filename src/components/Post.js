@@ -4,11 +4,10 @@ import blogContent from '../blogs/BlogMDX';
 import blogImages from '../blogs/images';
 import CustomCodeBlock from "../components/CodeBlock";
 import {useTheme} from "@emotion/react";
+import postData  from '../blogs/data';
+import NoMatch from '../components/NoMatch'
 
 export const Post = (props) => {
-    const post = props.history.location.state.post;
-    const Content = blogContent(post.id)
-    const Images = blogImages(post.id)
     const theme = useTheme()
     const mlArr = [0,2,4]
     const plArr = [0,2,3]
@@ -25,7 +24,6 @@ export const Post = (props) => {
         fontSize: ['.75em','1.5em','1.5em'],
     }
 
-
     const components = {
         pre: props => <div {...props} />,
         code: props => <Box sx={codeBlockSx}><CustomCodeBlock {...props} /></Box>,
@@ -40,24 +38,23 @@ export const Post = (props) => {
         </ol>
     }
 
-    const linkSX = {
-        color: theme.navbar.background,
-        fontWeight: 'bold',
-        fontSize: ['1em','1em','1.5em'],
-        textDecoration: 'none',
-        p: [1,2,3],
-        ':hover': {
-            color: theme.navbar.hover,
-            fontWeight: 900,
-        }
-    };
+    const pathArr = props.history.location.pathname.split('/').filter(function (el) {
+        return el !== "";
+    });
 
-  return (
+    const post = props.history.location.state ? props.history.location.state.post : postData(pathArr[pathArr.length-1])
+
+    const Content = post ? blogContent(post.id) : ''
+    const Images = post ? blogImages(post.id) : ''
+
+    if (post)
+        return (
     <div>
-      <Link href="/blog/" sx={linkSX}>{'<'} Back</Link>
+      <Link href="/blog/" sx={theme.linkSXAlt1}>{'<'} Back</Link>
         <Box p={mlArr} fontFamily='arial'>
             <Box pl={mlArr} pt={mlArr} pb={mlArr} bg={theme.colors.pale}>
                 <Heading as={'h1'} sx={theme.h1Sx}>{post.title}</Heading>
+                <Heading p={2} as={'h5'} sx={theme.h5Sx}>Posted: {post.posted}</Heading>
             </Box>
             <Box pt={2} pl={mlArr}>
                 <Suspense fallback={<div>Loading...</div>}>
@@ -67,4 +64,6 @@ export const Post = (props) => {
         </Box>
     </div>
   )
+  else
+   return (<NoMatch/>)
 }

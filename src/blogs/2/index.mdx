@@ -86,33 +86,50 @@ provider "aws" {
 }
 ```
 
-We will create our own default route table that our vpc will use as default
+We will use terraform to manage our default route table that comes with our vpc and define a separate one for our public subnet.  We create a route in our main route table for our nat gateway and create a route for our internet gateway for our public subnet.
 ```json
 ## Create main route table
-resource "aws_route_table" "main" {
-  tags = merge(
-  var.base_tags,
-  {
-    Name = "${var.resource_prefix}-main-rt"
-  },
-  )
-  vpc_id = aws_vpc.vpc.id
-}
-
 resource "aws_default_route_table" "main" {
+  default_route_table_id = aws_vpc.vpc.default_route_table_id
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.i.id
+  }
+
   tags = merge(
-  var.base_tags,
-  {
-    Name = "${var.resource_prefix}-main-rt"
-  },
+    var.base_tags,
+    {
+      Name = "${var.resource_prefix}-main-rt"
+    },
   )
-  default_route_table_id = aws_route_table.main.id
 }
 
-resource "aws_main_route_table_association" "main" {
-  vpc_id         = aws_vpc.vpc.id
-  route_table_id = aws_route_table.main.id
+## Create route table
+resource "aws_route_table" "i_public" {
+  vpc_id = aws_vpc.vpc.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.igw.id
+  }
+  tags = merge(
+    var.base_tags,
+    {
+      Name = "${var.resource_prefix}-rt"
+    },
+  )
 }
+
+## Associate route tables with subnets
+resource "aws_route_table_association" "i_subnet_private" {
+  subnet_id      = aws_subnet.subnet_private.id
+  route_table_id = aws_default_route_table.main.id
+}
+
+resource "aws_route_table_association" "i_subnet_public" {
+  subnet_id      = aws_subnet.subnet_public.id
+  route_table_id = aws_route_table.i_public.id
+}
+
 
 ```
 The VPC is defined by the aws_vpc resource using a variable to pass in the cidr block
@@ -146,7 +163,30 @@ resource "aws_internet_gateway" "igw" {
   )
 }
 ```
+Then we define a nat gateway to allow our private subnet instances to egress to the internet
+```json
+resource "aws_nat_gateway" "i" {
+  allocation_id = aws_eip.i.id
+  subnet_id     = aws_subnet.subnet_public.id
 
+  tags = merge(
+    var.base_tags,
+    {
+      Name = "${var.resource_prefix}-natgw"
+    },
+  )
+}
+
+resource "aws_eip" "i" {
+  vpc = true
+  tags = merge(
+    var.base_tags,
+    {
+      Name = "${var.resource_prefix}-eip"
+    },
+  )
+}
+```
 We can then create our private and public subnets using the aws_subnet resource and again using variables for the subnet cidr blocks and availability zones
 ```json
 ## Create public subnet
@@ -178,39 +218,6 @@ resource "aws_subnet" "subnet_private" {
     },
   )
 }
-```
-
-Next we create our route table with the aws_route_table resource
-```json
-## Create route table
-resource "aws_route_table" "rtb_public" {
-  vpc_id = aws_vpc.vpc.id
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.igw.id
-  }
-  tags = merge(
-    var.base_tags,
-    {
-      Name = "${var.resource_prefix}-rt"
-    },
-  )
-}
-```
-
-And lastly associate our subnets with our route tables
-```json
-## Associate route tables with subnets
-resource "aws_route_table_association" "rta_subnet_private" {
-  subnet_id      = aws_subnet.subnet_private.id
-  route_table_id = aws_default_route_table.main.id
-}
-
-resource "aws_route_table_association" "rta_subnet_public" {
-  subnet_id      = aws_subnet.subnet_public.id
-  route_table_id = aws_route_table.rtb_public.id
-}
-
 ```
 
 Within our terraform directory

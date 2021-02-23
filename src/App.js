@@ -3,7 +3,7 @@ import React from 'react'
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { NavigationBar } from './components/NavigationBar';
 import { About } from './components/About';
-import { NoMatch } from './components/NoMatch';
+import NoMatch from './components/NoMatch';
 import { Blogs } from './components/Blog';
 import { Post } from './components/Post';
 import { ThemeProvider } from '@emotion/react';

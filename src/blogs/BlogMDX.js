@@ -11,7 +11,7 @@ const blogContent = (id) => {
         case 2:
             return blog2;
         default:
-            return 'problem'
+            return ''
     }
 };
 
