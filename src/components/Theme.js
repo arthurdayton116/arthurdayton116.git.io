@@ -1,5 +1,6 @@
 // https://coolors.co/993955-ae76a6-a3c3d9-ccd6eb-e9ecf5
-const primarybackground = '#a3c3d9'
+// const primarybackground = '#a3c3d9'
+const primarybackground = 'black'
 const primarydarkshade1 = '#305873'
 const primarydarkshade2 = '#6EA2C4'
 const primarytextdarkshade1 = '#566DB3'
@@ -19,6 +20,7 @@ export default {
     colors: {
         primary: '#007bff',
         background: '#e9ecf5',
+        primaryBackground: primarybackground,
     },
     navbar: {
         background: primarybackground,
@@ -67,16 +69,22 @@ export default {
         text: primarydarkshade2,
     },
     h1Sx: {
-        color: primarydarkshade1,
+        // color: primarydarkshade1,
+        color: primarybackground,
         fontFamily: primaryFontFamily,
     },
     h5Sx: {
-        color: primarydarkshade2,
+        // color: primarydarkshade2,
+        color: primarybackground,
         fontFamily: primaryFontFamily,
         fontSize: '.75em',
     },
     h4: {
         text: primarydarkshade1,
+    },
+    h4Sx: {
+        color: primarybackground,
+        fontFamily: primaryFontFamily,
     },
     text: {
         primary: '#007bff',

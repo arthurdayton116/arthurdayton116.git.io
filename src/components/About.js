@@ -18,7 +18,7 @@ import {
          pb: [3,3,2]
      }
      const h4Sx={
-         color: theme.h1.text,
+         color: theme.colors.primaryBackground,
          fontFamily: theme.fontFamily,
          pb: [3,3,2],
          ml: [0,0,2]
@@ -49,7 +49,7 @@ import {
                  sx={{
                      textAlign: ['center','center','left'],
                      width: [ '1', '1/2' , '1/2'],
-                     color: theme.colors.primary,
+                     color: theme.colors.primaryBackground,
                      fontSize: 20,      // theme.fontSizes[2]
                      margin: 3,        // theme.space[3]
                  }}>
@@ -68,7 +68,7 @@ import {
              </Box>
 
          </Flex>
-     <SocialIcon url="https://www.linkedin.com/in/arthurdayton/" />
+     <SocialIcon bgColor={theme.colors.primaryBackground} url="https://www.linkedin.com/in/arthurdayton/" />
          </Box>
      )}
 

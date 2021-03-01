@@ -139,12 +139,16 @@ it's all statically compiled so it works for now ... until further enlightenment
 <br/>
 
 #### Bringing it all home
-Ultimately I end up with three files I maintain alongside my content files:
+Ultimately I end up with the following:
+
 <br/>
-- A data.json with essentially metadata about each blog post that I use to render my list of posts.
+
+- A data.json file with essentially metadata about each blog post that I use to render my list of posts.
 
 - A BlogMDX.js file that imports each mdx and returns the proper one based on blog id.
 
-- A theme file I use to drive mobile responsivenes and common color themes.
+- A theme file I use to drive mobile responsiveness and common color themes.
 
-- I push all my code to the <Link href={daCodeBranch} target="_blank">daCode branch</Link> and then I let github pages push the built code to the <Link href={mainBranch} target="_blank">main branch</Link> where it shows up as my github organization page.
+- Two branches
+    - One where I push all my code - <Link href={daCodeBranch} target="_blank">daCode branch</Link>
+    - The <Link href={mainBranch} target="_blank">main branch</Link> , that I let github pages push the built code to, where it shows up as my github organization page.

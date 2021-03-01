@@ -1,0 +1,212 @@
+import {
+    Box,
+    Card,
+    Image,
+    Heading,
+    Text,
+    Flex,
+    Link
+} from 'rebass';
+
+export const apacheHTTP = "https://httpd.apache.org/"
+export const awsIAMRole = "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html"
+export const awsIAMPolicy = "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html"
+export const EC2Repo = "https://github.com/arthurdayton116/aws-terraform/tree/main/terraform_ec2"
+export const S3Repo = "https://github.com/arthurdayton116/aws-terraform/tree/main/terraform_s3"
+
+#### Wait what?
+So I needed a way to demonstrate deploying EC2 instances but was looking for a real world problem to solve.  Turns out that my kids are addicted to Minecraft despite all efforts to insulate them from the insidious lure of gaming (read mom).
+
+<br/>
+
+I personally am not a gamer.  I'd love to give you some high minded declaration of why I don't play but imply that if I did I would obviously be better than you but the truth is I've always just sucked at video games and never had enough time outside my other time wasting activities (read blogging) to get better at it.
+
+<br/>
+
+Of course now that the kids have tasted the forbidden fruit they want to play online with each other and their friends (Distributed Access).   We (read mom) want to fence in the area where they play for obvious reasons so why doesn't dad help them set up an automatically deployed (Terraform and AWS) server that saves their world (Persisted State) in between sessions.
+
+<br/>
+
+You can purchase a server online from about 5000 different places and be done with it but it isn't exactly cheap for anything with any amount of horsepower and besides this is my chance to look cool to my kids by being a hacker (my kids define hacker as anything cool you can do with a computer that not everyone knows how to do - sometimes I tail log files just to make them think I'm hacking into government computers). So in the spirit of all who enjoy watching people change the gear ratio on a riding lawnmower to make it go 40mph I thought why can't I contribute to my children's delinquency by giving them a variably sized Minecraft server that they can fire up whenever they want (read mom lets them cause they were good - bribery is a foundational tenet of parenting).  This way we can maximize the size of the server when we need it (Ephemeral Workload) and minimize the cost of providing it (duh).
+
+<br/>
+
+Ok so we have a problem to solve let's list some requirements and plan out an architecture:
+- We are obviously going to need some compute so we'll use EC2 ami with Ubuntu which will require a <Link href="post/2" target="_blank">VPC</Link>.
+- We want to be secure so we need a way to feed in an arbitrary list of allowed IP addresses that can access the instance (Route table and Security Group).
+- We need to install software and have it start up automatically (User Data and Systemctl).
+- We need to preserve game state from previous sessions (S3).
+- We need a simple way to distribute access to our server across the planet (AWS).
+- To prove our servers are alive and accessible we will install an <Link href={apacheHTTP} target="_blank">Apache HTTP Server</Link>.
+- Seeing as we are already here let's show how a private subnet works with a NAT gateway (all the Minecraft stuff works fine without these parts).
+
+<br/>
+
+This diagram shows our basic architecture and gives us a way to break down our components into distinct stories for implementation.
+
+<Image p={4} verticalAlign='middle' src={props.images.ARCH_DRAWING_IMAGE} />
+
+<br/>
+My previous post on creating a VPC gives us the outer portion of the diagram so if my turn off the VPC layer we can see what we need to implement here:
+
+<br/>
+
+<Image p={4} verticalAlign='middle' src={props.images.ARCH_EC2_DRAWING_IMAGE} />
+
+<br/>
+
+I'll assume you can handle the implementation of the kids on your own and I won't being doing any posting on that as long as I'm employed in the corporate world so lets start with the S3 bucket.
+
+<br/>
+
+#### Create S3 Bucket
+
+<Link p={4} href={S3Repo} target="_blank">Code located here</Link>
+
+<br/>
+
+Creating one is simple with the aws_s3_bucket resource.  We will set ours to be private and not to destroy if it has contents:
+```json
+resource "aws_s3_bucket" "mc" {
+  bucket = "${local.resource_prefix}-bucket"
+  acl    = "private"
+  force_destroy = false
+  tags = merge(
+  local.base_tags,
+  {
+    Name = "${local.resource_prefix}-mc-s3"
+    directory = basename(path.cwd)
+  },
+  )
+}
+```
+
+<br/>
+
+The harder part is creating the role and permission we need to access it with our EC2 instance.
+
+<br/>
+
+#### Create role and policy to access bucket with EC2 instance
+
+From the AWS Docs <Link href={awsIAMRole} target="_blank">IAM roles</Link>
+
+---
+
+An IAM role is an IAM identity that you can create in your account that has specific permissions. An IAM role is similar to an IAM user, in that it is an AWS identity with permission policies that determine what the identity can and cannot do in AWS. However, instead of being uniquely associated with one person, a role is intended to be assumable by anyone who needs it. Also, a role does not have standard long-term credentials such as a password or access keys associated with it. Instead, when you assume a role, it provides you with temporary security credentials for your role session.
+
+---
+
+<br/>
+
+From the AWS Docs <Link href={awsIAMPolicy} target="_blank">Policies and permissions in IAM</Link>
+
+---
+
+You manage access in AWS by creating policies and attaching them to IAM identities (users, groups of users, or roles) or AWS resources. A policy is an object in AWS that, when associated with an identity or resource, defines their permissions. AWS evaluates these policies when an IAM principal (user or role) makes a request. Permissions in the policies determine whether the request is allowed or denied. Most policies are stored in AWS as JSON documents. AWS supports six types of policies: identity-based policies, resource-based policies, permissions boundaries, Organizations SCPs, ACLs, and session policies.
+
+---
+
+<br/>
+
+These descriptions explain that a role is an identity and a policy is a set of permissions.  Once we associate a role and a policy we can then grant that role to a user, or in our case a service, and we have the given our service permission to do something.
+
+<br/>
+
+First we define a role for the EC2 instance we plan to create that will allow the EC2 service to access resources in our account:
+
+```json
+resource "aws_iam_role" "ec2_s3_access_role" {
+  name = "${local.resource_prefix}-s3-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid = ""
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      },
+    ]
+  })
+
+  tags = merge(
+  local.base_tags,
+  {
+    Name = "${local.resource_prefix}-s3-role"
+    directory = basename(path.cwd)
+  },
+  )
+
+}
+```
+Next we need to create a policy that grants permission to do whatever to the specific bucket we create:
+
+```json
+resource "aws_iam_policy" "s3_policy" {
+    name        = "${local.resource_prefix}-s3-world-bucket"
+    description = "Policy for access to the world bucket"
+    policy      = jsonencode({
+      Version = "2012-10-17"
+      Statement = [{
+        Effect = "Allow"
+        Action = "s3:*"
+        Resource =  aws_s3_bucket.mc.arn
+      }]
+    })
+  }
+```
+
+Then the policy needs to be attached to the role:
+
+```json
+resource "aws_iam_policy_attachment" "s3_policy_attach" {
+  name       = "${local.resource_prefix}-s3-policy-attachment"
+  roles      = [aws_iam_role.ec2_s3_access_role.name]
+  policy_arn = aws_iam_policy.s3_policy.arn
+}
+```
+
+And because we are doing this prgramttically via Terraform we need to create an instance profile that our EC2 instance will use to assume our new role:
+
+```json
+resource "aws_iam_instance_profile" "ec2_profile" {
+  name  = "${local.resource_prefix}-ec2-profile"
+  role = aws_iam_role.ec2_s3_access_role.name
+}
+```
+
+Once we have deployed them we can see our role and policy in the console
+
+<Image p={4} verticalAlign='middle' src={props.images.ROLE_POLICY_IMAGE} />
+
+<Image p={4} verticalAlign='middle' src={props.images.TRUST_RELATIONSHIP_IMAGE} />
+
+<Image p={4} verticalAlign='middle' src={props.images.POLICY_ROLE_IMAGE} />
+
+There's a lot of meat on that bone but this gives us what we need to move on to creating our EC2 instances.  At this point I realize this is going to be a long post but we can't stop now.
+
+<br/>
+
+#### Create EC2 instances
+<Link p={4} href={EC2Repo} target="_blank">Code located here</Link>
+
+This part is easy too right up to the point it's not.  Making the instances is simple and most of the pain lies in the scripts that get executed upon creation snd the systemd service that is reposible for managing the fetching and storage of our world directory.
+
+
+
+#### Header
+
+
+
+<br/>
+
+<br/>
+
+
+
+Wrap it up
+
+<br/>
