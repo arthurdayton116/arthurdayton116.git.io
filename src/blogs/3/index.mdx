@@ -66,6 +66,8 @@ I'll assume you can handle the implementation of the kids on your own and I won'
 <br/>
 
 Creating one is simple with the aws_s3_bucket resource.  We will set ours to be private and not to destroy if it has contents:
+
+
 ```json
 resource "aws_s3_bucket" "mc" {
   bucket = "${local.resource_prefix}-bucket"
@@ -109,7 +111,7 @@ You manage access in AWS by creating policies and attaching them to IAM identiti
 
 <br/>
 
-These descriptions explain that a role is an identity and a policy is a set of permissions.  Once we associate a role and a policy we can then grant that role to a user, or in our case a service, and we have the given our service permission to do something.
+These descriptions explain that a role is an identity and a policy is a set of permissions.  Once we associate a role and a policy we can then grant that role to a user, or in our case a service, and we have given our service permission to do something.
 
 <br/>
 
@@ -169,7 +171,7 @@ resource "aws_iam_policy_attachment" "s3_policy_attach" {
 }
 ```
 
-And because we are doing this prgramttically via Terraform we need to create an instance profile that our EC2 instance will use to assume our new role:
+And because we are doing this programmatically via Terraform we need to create an instance profile that our EC2 instance will use to assume our new role:
 
 ```json
 resource "aws_iam_instance_profile" "ec2_profile" {
@@ -213,7 +215,7 @@ There is a pile of stuff going on here but it's all pretty self explanatory:
 
 <br/>
 
-```bash
+```shell
     #!/bin/sh
 
     # check logs
@@ -268,7 +270,7 @@ There is a pile of stuff going on here but it's all pretty self explanatory:
     sudo ufw allow 22/tcp
     sudo ufw allow 80/tcp
 
-    ### Install apache for endpoint check and narf some simple HTML into an index file
+    ### Install apache for endpoint check and echo some simple HTML into an index file
     apt-get install -y apache2
     service start apache2
     chkconfig apache2 on
@@ -282,7 +284,7 @@ There is a pile of stuff going on here but it's all pretty self explanatory:
 
 <br/>
 
-The next piece of magic is the service template.  The two important parts are the ExecStart which tells it so start Minecraft when our server starts and the all important 4th ExecStop that says run that script that will sync your world back to S3 before we unceremoniously slaughter this here server.
+The next piece of magic is the service template.  The two important parts are the ExecStart which tells it to start Minecraft when our server starts and the all important 4th ExecStop that says run the script that will sync your world back to S3 before we unceremoniously slaughter this here server.
 
 <br/>
 
@@ -290,7 +292,11 @@ The next piece of magic is the service template.  The two important parts are th
 
 <br/>
 
-After I watched my 8 year old rage quit Minecraft for life over apparently losing all his diamonds (whatever that means) and then have a several minutes long conversation with himself about how it's all right and it's just a video game and then proceed to start playing again I thought about turning on versioning for my S3 bucket to save him the pain of having to suffer the consequences of his actions.  But then I thought what kind of life lesson would I be teaching him?  If I make Minecraft have no consequences next thing you know he'll borrow $100g's for an Art History degree and expect me to pay off his student loans.  So suck it up little one life is hard and nobody cares how you feel and as survival mode makes abundantly clear ya gotta kill to eat. So go whack a golum or something and learn how to cheat on the internet like everyone else.
+After I watched my 8 year old rage quit Minecraft for life over apparently losing all his diamonds (whatever that means) and then have a several minutes long conversation with himself about how it's all right and it's just a video game, and then proceed to start playing again, I thought about turning on versioning for my S3 bucket. But then I thought what kind of life lesson would I be teaching him by not letting him suffer the consequences of his actions?  So suck it up little one life is hard, nobody cares how you feel, and as survival mode makes abundantly clear ya gotta kill to eat. So go whack a golum or something and learn how to cheat on the internet like everyone else.
+
+<br/>
+
+The important thing to know here is that it is possible to version the files you are syncing back to S3 in case something goes horribly wrong and you need to back up to previous version of your state.
 
 <br/>
 
@@ -298,16 +304,15 @@ Looking at our Terraform folder the last part that I'm really concerned with is 
 
 <Image p={4} verticalAlign='middle' src={props.images.TF_FOLDER_IMAGE} />
 
-If you are curious about what's bad about setting up ingress rules that have bits like this:
+We want to avoid leaving our server open to the whole world by setting up ingress rules that have bits like this:
 
 ```json
 cidr_blocks = ["0.0.0.0/0"]
 ```
-go ahead and give it a try for a day or two.
 
 <br/>
 
-For ours we will at least try and make it hard (you don't need 22 or 80 for Minecraft):
+For our Minecraft server we will limit access to our local IP (you don't need 22 or 80 for Minecraft).  The chomp part should put your public ip in the cidr_blocks, if you are running everything local, and you can obviously put an array of whatever IP's you want in there:
 
 ```json
 resource "aws_security_group" "ec2_public" {
@@ -350,6 +355,205 @@ resource "aws_security_group" "ec2_public" {
 
 So finally we are ready to deploy this thing and bask in the glory of our creation.  My 12 year old is convinced I'd have been done hours ago if I just read some stupid blog entry he found.  He's to young to understand why the person who wrote that is clearly an idiot and has no idea how to properly massively over engineer something.
 
+<br/>
 
+So assuming you have your VPC:
+
+<Image p={4} verticalAlign='middle' src={props.images.VPC_OUTPUTS_IMAGE} />
+
+and your S3 bucket deployed
+
+<Image p={4} verticalAlign='middle' src={props.images.S3_OUTPUTS_IMAGE} />
+
+you should have the outputs stored in their respective state files that will allow us to successfully run terraform apply on our terraform_ec2 directory:
+
+
+```json-highlight-24_35
+terraform apply -auto-approve
+aws_key_pair.ec2key: Creating...
+aws_security_group.ec2_private: Creating...
+aws_security_group.ec2_public: Creating...
+aws_key_pair.ec2key: Creation complete after 1s [id=sample-company_publicKey]
+aws_security_group.ec2_private: Creation complete after 2s [id=sg-056c29f273b591cbc]
+aws_instance.web2: Creating...
+aws_security_group.ec2_public: Creation complete after 2s [id=sg-0bc194e10e0a1b1fe]
+aws_instance.web: Creating...
+aws_instance.web2: Still creating... [10s elapsed]
+aws_instance.web: Still creating... [10s elapsed]
+aws_instance.web: Provisioning with 'file'...
+aws_instance.web2: Still creating... [20s elapsed]
+aws_instance.web: Still creating... [20s elapsed]
+aws_instance.web2: Creation complete after 22s [id=i-0af98772d68da2ae2]
+aws_instance.web: Still creating... [30s elapsed]
+aws_instance.web: Provisioning with 'file'...
+aws_instance.web: Creation complete after 39s [id=i-071d7600670c59383]
+aws_eip_association.eip_assoc: Creating...
+aws_eip_association.eip_assoc: Creation complete after 1s [id=eipassoc-0768156bed17736c0]
+
+Apply complete! Resources: 6 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+copy_private_key_to_ec2 = "scp -i ~/.ssh/id_rsa_ec2 ~/.ssh/id_rsa_ec2 ubuntu@44.239.221.41:~/.ssh/id_rsa_ec2"
+curl_local_host = "curl http://localhost"
+curl_private_host = "curl http://10.1.1.126"
+key_id = "sample-company_publicKey"
+key_name = "sample-company_publicKey"
+private_ssh_link = "ssh -i ~/.ssh/id_rsa_ec2 ubuntu@10.1.1.126"
+public_ssh_link = "ssh -i ~/.ssh/id_rsa_ec2 ubuntu@44.239.221.41"
+webserver_ip = "44.239.221.41"
+webserver_link = "http://44.239.221.41"
+```
 
 <br/>
+
+The outputs should give us all the connection strings we need to test it.
+
+<br/>
+
+The public ssh should get you right in to your public instance while
+the private one should fail from your local machine but work fine from within your public instance after you copy a private key to the public instance:
+
+<br/>
+
+```bash
+➜  terraform_ec2 git:(main) ✗ ssh -i ~/.ssh/id_rsa_ec2 ubuntu@10.1.1.236
+ssh: connect to host 10.1.1.236 port 22: Network is unreachable
+```
+
+<br/>
+
+```bash-highlight-10_35
+copy_private_key_to_ec2 = "scp -i ~/.ssh/id_rsa_ec2 ~/.ssh/id_rsa_ec2 ubuntu@52.88.116.72:~/.ssh/id_rsa_ec2"
+curl_local_host = "curl http://localhost"
+curl_private_host = "curl http://10.1.1.240"
+key_id = "sample-company_publicKey"
+key_name = "sample-company_publicKey"
+private_ssh_link = "ssh -i ~/.ssh/id_rsa_ec2 ubuntu@10.1.1.240"
+public_ssh_link = "ssh -i ~/.ssh/id_rsa_ec2 ubuntu@52.88.116.72"
+webserver_ip = "52.88.116.72"
+webserver_link = "http://52.88.116.72"
+➜  terraform_ec2 git:(main) ✗ scp -i ~/.ssh/id_rsa_ec2 ~/.ssh/id_rsa_ec2 ubuntu@52.88.116.72:~/.ssh/id_rsa_ec2
+id_rsa_ec2                                                                                                                                                                 100% 2622   195.4KB/s   00:00
+➜  terraform_ec2 git:(main) ✗ ssh -i ~/.ssh/id_rsa_ec2 ubuntu@52.88.116.72
+ubuntu@ip-10-1-0-10:~$ ssh -i ~/.ssh/id_rsa_ec2 ubuntu@10.1.1.240
+ubuntu@ip-10-1-1-240:~$ curl http://localhost
+<html>
+<h1>Welcome to Apache Web Server</h1>
+<h2>Created using Terraform</h2>
+<h4>Instance ID=i-04bde504b37f90be6</h4>
+</html>
+ubuntu@ip-10-1-1-240:~$ exit
+logout
+Connection to 10.1.1.240 closed.
+ubuntu@ip-10-1-0-10:~$ curl http://10.1.1.240
+<html>
+<h1>Welcome to Apache Web Server</h1>
+<h2>Created using Terraform</h2>
+<h4>Instance ID=i-04bde504b37f90be6</h4>
+</html>
+ubuntu@ip-10-1-0-10:~$
+```
+
+<br/>
+
+We prove out our connectivity and the success of our Apache install by showing we can ssh into our private instance and curl our simple index file. A quick check in the browser shows we have successfully installed and routed our public Apache instance:
+
+<br/>
+
+<Image p={4} verticalAlign='middle' src={props.images.BROWSER_PROOF_IMAGE} />
+
+<br/>
+
+Now we can check our Minecraft server status and see if my latest instance of a server has inherited files from the S3 bucket:
+
+```bash
+ubuntu@ip-10-1-0-10:/opt/ubuntu/willmc$ ls
+banned-ips.json  banned-players.json  eula.txt  logs  mc_16_4_server.jar  ops.json  server.properties  shutdown.sh  usercache.json  whitelist.json  world
+ubuntu@ip-10-1-0-10:/opt/ubuntu/willmc$ sudo systemctl status minecraft@willmc
+● minecraft@willmc.service - Minecraft Server: willmc
+   Loaded: loaded (/etc/systemd/system/minecraft@.service; indirect; vendor preset: enabled)
+   Active: active (running) since Wed 2021-03-03 05:44:26 UTC; 1min 16s ago
+ Main PID: 9966 (screen)
+    Tasks: 32 (limit: 4686)
+   CGroup: /system.slice/system-minecraft.slice/minecraft@willmc.service
+           ├─9966 /usr/bin/SCREEN -DmS mc-willmc /usr/bin/java -Xmx2G -jar mc_16_4_server.jar nogui
+           └─9981 /usr/bin/java -Xmx2G -jar mc_16_4_server.jar nogui
+
+Mar 03 05:44:26 ip-10-1-0-10 systemd[1]: Started Minecraft Server: willmc.
+ubuntu@ip-10-1-0-10:/opt/ubuntu/willmc$
+```
+
+<br/>
+
+It's up and alive and we can see a big set of files were apparently copied over.  If you have any doubts about what happened during startup you can check the logs:
+
+```bash
+ubuntu@ip-10-1-0-10:/opt/ubuntu/willmc$ cd /var/log/
+ubuntu@ip-10-1-0-10:/var/log$ ls
+alternatives.log  apache2  auth.log  cloud-init-output.log  dist-upgrade  fontconfig.log  kern.log   lastlog  syslog    unattended-upgrades
+amazon            apt      btmp      cloud-init.log         dpkg.log      journal         landscape  lxd      tallylog  wtmp
+ubuntu@ip-10-1-0-10:/var/log$ vi cloud-init-output.log
+```
+
+For proof that our sync back to S3 works we can create a file in the /opt/ubuntu/willmc directory and then destroy our instance.  If it works we should see our file in S3 (you could also play Minecraft) after our instance is destroyed:
+
+```bash
+ubuntu@ip-10-1-0-10:/var/log$ cd /opt/ubuntu/willmc/
+ubuntu@ip-10-1-0-10:/opt/ubuntu/willmc$ ls
+banned-ips.json  banned-players.json  eula.txt  logs  mc_16_4_server.jar  ops.json  server.properties  shutdown.sh  usercache.json  whitelist.json  world
+ubuntu@ip-10-1-0-10:/opt/ubuntu/willmc$ echo "This proves it!!!!!!" > proof.txt
+echo "This proves itlslsls" > proof.txt
+ubuntu@ip-10-1-0-10:/opt/ubuntu/willmc$ ls
+banned-ips.json  banned-players.json  eula.txt  logs  mc_16_4_server.jar  ops.json  proof.txt  server.properties  shutdown.sh  usercache.json  whitelist.json  world
+ubuntu@ip-10-1-0-10:/opt/ubuntu/willmc$
+```
+
+<br/>
+
+Checking our S3 bucket before we see :
+
+<Image p={4} verticalAlign='middle' src={props.images.S3_BEFORE_IMAGE} />
+
+Now gently eradicate our server:
+
+```json
+terraform_ec2 git:(main) ✗ terraform destroy -auto-approve
+aws_eip_association.eip_assoc: Destroying... [id=eipassoc-078c38f9e56ba06a1]
+aws_instance.web2: Destroying... [id=i-0f25f3c362d883891]
+aws_eip_association.eip_assoc: Destruction complete after 1s
+aws_instance.web: Destroying... [id=i-053edeb44ecce49b3]
+aws_instance.web2: Still destroying... [id=i-0f25f3c362d883891, 10s elapsed]
+aws_instance.web: Still destroying... [id=i-053edeb44ecce49b3, 10s elapsed]
+aws_instance.web2: Still destroying... [id=i-0f25f3c362d883891, 20s elapsed]
+aws_instance.web: Still destroying... [id=i-053edeb44ecce49b3, 20s elapsed]
+aws_instance.web2: Still destroying... [id=i-0f25f3c362d883891, 30s elapsed]
+aws_instance.web2: Destruction complete after 30s
+aws_security_group.ec2_private: Destroying... [id=sg-0e95bea130aaf9617]
+aws_security_group.ec2_private: Destruction complete after 1s
+aws_instance.web: Still destroying... [id=i-053edeb44ecce49b3, 30s elapsed]
+aws_instance.web: Destruction complete after 31s
+aws_key_pair.ec2key: Destroying... [id=sample-company_publicKey]
+aws_security_group.ec2_public: Destroying... [id=sg-04ef77127230486df]
+aws_key_pair.ec2key: Destruction complete after 0s
+aws_security_group.ec2_public: Destruction complete after 1s
+
+Destroy complete! Resources: 6 destroyed.
+➜  terraform_ec2 git:(main) ✗
+
+```
+
+And we can see our shutdown script has done it's job:
+
+<Image p={4} verticalAlign='middle' src={props.images.S3_AFTER_IMAGE} />
+
+#### Conclusion
+My kids have no idea how good they have it.
+
+<br/>
+
+Also, this example does a pretty good job of touching on a lot of key concepts you will encounter in the real world and shows how you can take advantage of one of the key benefits of the cloud by only paying for resources when you need them.
+
+<br/>
+
+I hope it helps someone look good in front of their kids or worst case their boss.

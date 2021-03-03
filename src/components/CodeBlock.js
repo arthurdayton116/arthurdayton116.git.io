@@ -11,6 +11,11 @@ const CustomCodeBlock = (props) => {
             ? className.split("-")[1]
             : "javascript";
 
+    const highlight =
+        className?.split("-")[2] === "highlight"
+            ? className.split("-")[3].replace('_','-')
+            : "";
+
     return copy ? (
         <CopyBlock
             text={children}
@@ -20,8 +25,9 @@ const CustomCodeBlock = (props) => {
             codeBlock
         />
     ) : (
-        <CodeBlock text={children} language={language} theme={dracula} wrapLines />
+        <CodeBlock highlight={highlight} text={children} language={language} theme={dracula} wrapLines />
     );
 };
+
 
 export default CustomCodeBlock;
