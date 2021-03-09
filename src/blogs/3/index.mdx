@@ -14,31 +14,19 @@ export const awsIAMPolicy = "https://docs.aws.amazon.com/IAM/latest/UserGuide/ac
 export const EC2Repo = "https://github.com/arthurdayton116/aws-terraform/tree/main/terraform_ec2"
 export const S3Repo = "https://github.com/arthurdayton116/aws-terraform/tree/main/terraform_s3"
 
-#### Wait what?
-So I needed a way to demonstrate deploying EC2 instances but was looking for a real world problem to solve.  Turns out that my kids are addicted to Minecraft despite all efforts to insulate them from the insidious lure of gaming (read mom).
+#### Wait... what?
+I was looking for a way to demonstrate deploying EC2 instances into my VPC but was looking for a real world problem to solve while I did it.  As it turns out, despite all efforts to insulate them from the insidious lure of gaming (read mom), my kids LOVE Minecraft.  I have been into technology for most of my life, and make a living off of my knowledge of it, but I am not a gamer. Until now I have never had the motivation to try setting up a Minecraft server but now that the kids have tasted the forbidden fruit of multiplayer video games they, of course, want to play online with their friends.  You can purchase a server online from about 5000 different places and be done with it but it isn't exactly cheap for anything bigger than a Raspberry PI and this is my chance to look cool to my kids by being a hacker (my kids define hacker as anything cool you can do with a computer that involves a terminal window).  So, in the spirit of all who enjoy watching people change the gear ratio on a riding lawnmower to make it go 40 mph, I thought I can contribute to my children's delinquency by giving them a variably sized Minecraft server that they can fire up whenever they want AND make a blog post.  Given this obvious pressing need, I decided to set the kids up with an automatically deployed Minecraft server using Terraform and AWS.  It saves their world in between sessions in an S3 bucket so we can completely tear it down when they are not using it but can start up a new server on demand right where they left off in the game.
 
 <br/>
 
-I personally am not a gamer.  I'd love to give you some high minded declaration of why I don't play but imply that if I did I would obviously be better than you but the truth is I've always just sucked at video games and never had enough time outside my other time wasting activities (read blogging) to get better at it.
-
-<br/>
-
-Of course now that the kids have tasted the forbidden fruit they want to play online with each other and their friends (Distributed Access).   We (read mom) want to fence in the area where they play for obvious reasons so why doesn't dad help them set up an automatically deployed (Terraform and AWS) server that saves their world (Persisted State) in between sessions.
-
-<br/>
-
-You can purchase a server online from about 5000 different places and be done with it but it isn't exactly cheap for anything with any amount of horsepower and besides this is my chance to look cool to my kids by being a hacker (my kids define hacker as anything cool you can do with a computer that not everyone knows how to do - sometimes I tail log files just to make them think I'm hacking into government computers). So in the spirit of all who enjoy watching people change the gear ratio on a riding lawnmower to make it go 40mph I thought why can't I contribute to my children's delinquency by giving them a variably sized Minecraft server that they can fire up whenever they want (read mom lets them cause they were good - bribery is a foundational tenet of parenting).  This way we can maximize the size of the server when we need it (Ephemeral Workload) and minimize the cost of providing it (duh).
-
-<br/>
-
-Ok so we have a problem to solve let's list some requirements and plan out an architecture:
-- We are obviously going to need some compute so we'll use EC2 ami with Ubuntu which will require a <Link href="post/2" target="_blank">VPC</Link>.
+Ok, so now that we have an important real world problem to solve, lets list our requirements and plan out an architecture:
+- We are obviously going to need some compute so we'll use an EC2 ami with Ubuntu which will require a <Link href="post/2" target="_blank">VPC</Link>.
 - We want to be secure so we need a way to feed in an arbitrary list of allowed IP addresses that can access the instance (Route table and Security Group).
 - We need to install software and have it start up automatically (User Data and Systemctl).
 - We need to preserve game state from previous sessions (S3).
 - We need a simple way to distribute access to our server across the planet (AWS).
 - To prove our servers are alive and accessible we will install an <Link href={apacheHTTP} target="_blank">Apache HTTP Server</Link>.
-- Seeing as we are already here let's show how a private subnet works with a NAT gateway (all the Minecraft stuff works fine without these parts).
+- Seeing as we are already here - with a few more lines of code - we can show how a private subnet works with a NAT gateway (all the Minecraft stuff works fine without these parts) and demonstrate the difference between a public and private instance.
 
 <br/>
 
@@ -55,7 +43,7 @@ My previous post on creating a VPC gives us the outer portion of the diagram so 
 
 <br/>
 
-I'll assume you can handle the implementation of the kids on your own and I won't being doing any posting on that as long as I'm employed in the corporate world so lets start with the S3 bucket.
+I'll assume you can handle the implementation of the kids on your own so lets start with the S3 bucket.
 
 <br/>
 
@@ -65,7 +53,7 @@ I'll assume you can handle the implementation of the kids on your own and I won'
 
 <br/>
 
-Creating one is simple with the aws_s3_bucket resource.  We will set ours to be private and not to destroy if it has contents:
+Creating an S3 bucket is pretty simple with the the aws_s3_bucket resource in Terraform.  We will set ours to be privately accessible, so only our EC2 instance can reach it, and protect it from destruction if it has contents:
 
 
 ```json
@@ -85,11 +73,11 @@ resource "aws_s3_bucket" "mc" {
 
 <br/>
 
-The harder part is creating the role and permission we need to access it with our EC2 instance.
+#### Create role and policy to access bucket with EC2 instance
+
+Creating the role and permission we need to access it with our EC2 instance is a little harder but not to bad.
 
 <br/>
-
-#### Create role and policy to access bucket with EC2 instance
 
 From the AWS Docs <Link href={awsIAMRole} target="_blank">IAM roles</Link>
 
@@ -111,11 +99,11 @@ You manage access in AWS by creating policies and attaching them to IAM identiti
 
 <br/>
 
-These descriptions explain that a role is an identity and a policy is a set of permissions.  Once we associate a role and a policy we can then grant that role to a user, or in our case a service, and we have given our service permission to do something.
+These descriptions explain that a role is an identity and a policy is a set of permissions.  Once we associate a role and a policy we can then grant that role to a user, or in our case a service, and we will have given our service permission to do something (read/write to an S3 bucket in this case).
 
 <br/>
 
-First we define a role for the EC2 instance we plan to create that will allow the EC2 service to access resources in our account:
+First we define a role with the Terraform aws_iam_role resource for the EC2 instance we plan to create.  This will allow the EC2 service to access resources in our account:
 
 ```json
 resource "aws_iam_role" "ec2_s3_access_role" {
@@ -144,7 +132,7 @@ resource "aws_iam_role" "ec2_s3_access_role" {
 
 }
 ```
-Next we need to create a policy that grants permission to do whatever to the specific bucket we create:
+Next we need to create a policy with the aws_iam_policy resource that grants permission to do whatever to the specific bucket we create:
 
 ```json
 resource "aws_iam_policy" "s3_policy" {
@@ -171,7 +159,7 @@ resource "aws_iam_policy_attachment" "s3_policy_attach" {
 }
 ```
 
-And because we are doing this programmatically via Terraform we need to create an instance profile that our EC2 instance will use to assume our new role:
+And because we are doing this programmatically via Terraform, we need to create an instance profile that our EC2 instance will use to assume our new role:
 
 ```json
 resource "aws_iam_instance_profile" "ec2_profile" {
@@ -188,14 +176,14 @@ Once we have deployed them we can see our role and policy in the console
 
 <Image p={4} verticalAlign='middle' src={props.images.POLICY_ROLE_IMAGE} />
 
-There's a lot of meat on that bone but this gives us what we need to move on to creating our EC2 instances.  At this point I realize this is going to be a long post but we can't stop now.
+There's a lot more we could delve into here but this gives us what we need to move on to creating our EC2 instances.
 
 <br/>
 
 #### Create EC2 instances
 <Link p={4} href={EC2Repo} target="_blank">Code located here</Link>
 
-This part is easy too right up to the point it's not.  Making the instances is simple and most of the pain lies in the scripts that get executed upon creation and the systemd service that is responsible for managing the fetching and storage of our world directory.
+This part is easy too right up to the point it's not.  Making the EC2 instances is simple but the pain lies in the scripts that get executed upon creation and the systemd service that is responsible for managing the fetching and storage of our world directory.  Once you get them right it's not bad but getting them to work exactly how you want can be tedious.
 
 <br/>
 
@@ -203,7 +191,7 @@ A lot of stuff comes together in the definition of our public EC2 instance that 
 
 <Image p={4} verticalAlign='middle' src={props.images.WEBSERVER_IMAGE} />
 
-The file provisioner gives us a way to move our Minecraft.jar file and the service template we will use to sync our instance with our S3 bucket.
+The file provisioner gives us a way to move our Minecraft.jar file and the service template we will use to sync our instance with our S3 bucket to our EC2 instance.
 
 <br/>
 
@@ -211,7 +199,7 @@ The instance profile gives our EC2 instance the permissions it needs to manage o
 
 <br/>
 
-There is a pile of stuff going on here but it's all pretty self explanatory:
+There is a bunch of stuff going on here but it's all pretty self explanatory:
 
 <br/>
 
@@ -284,7 +272,7 @@ There is a pile of stuff going on here but it's all pretty self explanatory:
 
 <br/>
 
-The next piece of magic is the service template.  The two important parts are the ExecStart which tells it to start Minecraft when our server starts and the all important 4th ExecStop that says run the script that will sync your world back to S3 before we unceremoniously slaughter this here server.
+The next piece of magic is the service template.  The two important parts are the ExecStart which tells it to start Minecraft when our server starts and the all important 4th ExecStop that says run the script that will sync your world back to S3 before we unceremoniously deleting this server.
 
 <br/>
 
@@ -292,15 +280,11 @@ The next piece of magic is the service template.  The two important parts are th
 
 <br/>
 
-After I watched my 8 year old rage quit Minecraft for life over apparently losing all his diamonds (whatever that means) and then have a several minutes long conversation with himself about how it's all right and it's just a video game, and then proceed to start playing again, I thought about turning on versioning for my S3 bucket. But then I thought what kind of life lesson would I be teaching him by not letting him suffer the consequences of his actions?  So suck it up little one life is hard, nobody cares how you feel, and as survival mode makes abundantly clear ya gotta kill to eat. So go whack a golum or something and learn how to cheat on the internet like everyone else.
+After I watched my 8 year old rage quit Minecraft for life over apparently losing all his diamonds (whatever that means), and then proceed to start playing again in less than 15 minutes, I thought about turning on versioning for my S3 bucket. But then I thought what kind of life lesson would I be teaching him by not letting him suffer the consequences of his actions?  So suck it up little one, as survival mode makes abundantly clear, life is hard.  But, if you don't subscribe to my baby shark parenting style, know that it is possible to version the files you are syncing back to S3 in case something goes awry and you need to back up to previous version of your world state.
 
 <br/>
 
-The important thing to know here is that it is possible to version the files you are syncing back to S3 in case something goes horribly wrong and you need to back up to previous version of your state.
-
-<br/>
-
-Looking at our Terraform folder the last part that I'm really concerned with is limiting who can get to our server. So we define our security groups in the ec2_security_group.tf:
+Looking at our Terraform folder the last part that I'm really concerned with is limiting who can get to our server. To do that I define a security group in the ec2_security_group.tf:
 
 <Image p={4} verticalAlign='middle' src={props.images.TF_FOLDER_IMAGE} />
 
@@ -312,7 +296,7 @@ cidr_blocks = ["0.0.0.0/0"]
 
 <br/>
 
-For our Minecraft server we will limit access to our local IP (you don't need 22 or 80 for Minecraft).  The chomp part should put your public ip in the cidr_blocks, if you are running everything local, and you can obviously put an array of whatever IP's you want in there:
+so for our Minecraft server we will limit access to our local IP (you don't need 22 or 80 for Minecraft).  The chomp part should put your public ip in the cidr_blocks, if you are running everything local, and you can obviously put an array of whatever IP's you want in there:
 
 ```json
 resource "aws_security_group" "ec2_public" {
@@ -353,11 +337,11 @@ resource "aws_security_group" "ec2_public" {
 
 <br/>
 
-So finally we are ready to deploy this thing and bask in the glory of our creation.  My 12 year old is convinced I'd have been done hours ago if I just read some stupid blog entry he found.  He's to young to understand why the person who wrote that is clearly an idiot and has no idea how to properly massively over engineer something.
+Finally, we are ready to deploy this thing and bask in the glory of our creation.  My 12 year old is convinced I'd have been done hours ago if I just read some stupid blog entry he found but he's to young to understand why the person who wrote that is clearly an idiot and has no idea how to properly over engineer something.
 
 <br/>
 
-So assuming you have your VPC:
+Assuming you have your VPC
 
 <Image p={4} verticalAlign='middle' src={props.images.VPC_OUTPUTS_IMAGE} />
 
@@ -411,8 +395,7 @@ The outputs should give us all the connection strings we need to test it.
 
 <br/>
 
-The public ssh should get you right in to your public instance while
-the private one should fail from your local machine but work fine from within your public instance after you copy a private key to the public instance:
+The public ssh should get you right in to your public instance while the private one should fail from your local machine but work fine from within your public instance ()after you copy a private key to the public instance):
 
 <br/>
 
@@ -457,7 +440,7 @@ ubuntu@ip-10-1-0-10:~$
 
 <br/>
 
-We prove out our connectivity and the success of our Apache install by showing we can ssh into our private instance and curl our simple index file. A quick check in the browser shows we have successfully installed and routed our public Apache instance:
+We prove out our connectivity and the success of our Apache install by showing we can ssh into our private instance and curl our simple index file. That proves the NAT gateway we set up in our VPC allowed our private instance to reach out to the internet for its software installs. A quick check in the browser shows we have successfully installed and routed our public Apache instance:
 
 <br/>
 
@@ -465,7 +448,7 @@ We prove out our connectivity and the success of our Apache install by showing w
 
 <br/>
 
-Now we can check our Minecraft server status and see if my latest instance of a server has inherited files from the S3 bucket:
+and now we can check our Minecraft server status and see if my latest instance of a server has inherited files from the S3 bucket:
 
 ```bash
 ubuntu@ip-10-1-0-10:/opt/ubuntu/willmc$ ls
@@ -552,8 +535,13 @@ My kids have no idea how good they have it.
 
 <br/>
 
-Also, this example does a pretty good job of touching on a lot of key concepts you will encounter in the real world and shows how you can take advantage of one of the key benefits of the cloud by only paying for resources when you need them.
+I hope this post helps someone else look good in front of their kids or at the very least their boss.
 
 <br/>
 
-I hope it helps someone look good in front of their kids or worst case their boss.
+I think this example does a pretty good job of touching on a lot of key concepts you will encounter in the real world and shows how you can take advantage of some of the key benefits of the cloud:
+- Automated deployment using infrastructure as code
+- Only paying for resources when you actually need them
+
+<br/>
+

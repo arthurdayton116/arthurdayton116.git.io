@@ -1,11 +1,14 @@
 import React, {Suspense} from 'react'
-import { Box, Heading, Text } from 'rebass';
+import { Box, Heading, Text, Link } from 'rebass';
 import blogContent from '../blogs/BlogMDX';
 import blogImages from '../blogs/images';
 import CustomCodeBlock from "../components/CodeBlock";
 import {useTheme} from "@emotion/react";
 import {postData}  from '../blogs/data';
 import NoMatch from '../components/NoMatch'
+
+export const blogIssue = "https://github.com/arthurdayton116/arthurdayton116.github.io/issues/new"
+export const awsTFIssue = "https://github.com/arthurdayton116/aws-terraform/issues/new"
 
 export const Post = (props) => {
     const theme = useTheme()
@@ -71,7 +74,10 @@ export const Post = (props) => {
                 <Suspense fallback={<div>Loading...</div>}>
                     <Content components={components} post={post} images={Images}/>
                 </Suspense>
-            </Box>
+                <Box pt={2} pl={mlArr}>
+                Comments or questions create an issue on <Link href={blogIssue} target="_blank">blog repo</Link> or <Link href={awsTFIssue} target="_blank">code repo</Link>.
+                </Box>
+                </Box>
         </Box>
     </Box>
   )
