@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  blog:
+    image: node:15.12.0-buster
+    working_dir: /mnt
+    command: bash -c "npm install -g nodemon; npm install; nodemon --watch src start"
+    volumes:
+      - .:/mnt
+      - /mnt/node_modules
+    ports:
+      - "4000:3000"

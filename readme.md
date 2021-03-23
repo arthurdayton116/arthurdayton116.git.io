@@ -4,6 +4,17 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 main branch contains deployed build code for gh pages and daCode branch has the code used to create it
 
+## Docker
+From the root of repository run this:
+
+```angular2html
+docker run \
+-v `pwd`:/mnt \
+--workdir /mnt \
+-p 4000:3000 \
+-i -t node:15.12.0-buster /bin/bash -c "npm install -g nodemon; npm install; nodemon -d 30 -P 10000 --watch src start"
+```
+
 ## Available Scripts
 
 In the project directory, you can run:

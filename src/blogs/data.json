@@ -25,5 +25,14 @@
     "posted": "2021-02-28",
     "lastUpdated": "2021-02-28",
     "technologies": ["AWS", "EC2", "Terraform", "Minecraft", "Systemctl", "Ubuntu"]
+  },
+  {
+    "id": 4,
+    "title": "Using Docker for local development",
+    "body": "Here comes some information",
+    "postLink": "../blogs/4",
+    "posted": "2021-03-22",
+    "lastUpdated": "021-03-22",
+    "technologies": ["Docker", "Terraform", "React"]
   }
 ]
