@@ -22,8 +22,8 @@ export const dockerCompose = "https://docs.docker.com/compose/"
 
 export const Repo = "https://github.com/arthurdayton116/aws-terraform/tree/main/terraform_vpc"
 
-#### Why using Docker for local development is so huge and yet so hard to convince devs to do
-I do a lot of programming in a lot of different languages at different times for different reasons on different machines in different places.  One of the inevitable side effects of this is the dreaded "it works on [insert wherever your not here]".  I experience this effect on steroids when doing pipeline development where I can never count on the current version of the os or toolchain being used to perform any particular task.  The most recent incarnation of this happened when my 12 year old son asked me to teach him how to deploy his own minecraft server and learn to code.  Stop me if you've heard this one before - he has a Windows machine and I have a Mac - putting aside whether teaching a kid to program on a Windows machine is child abuse - I was faced with instant problems with pathing related to Terraform.
+#### Change is hard but it is actually harder not to change in this case
+I do a lot of programming in a lot of different languages at different times for different reasons on different machines in different places.  One of the inevitable side effects of this is the dreaded "it works on [insert wherever you are not here]".  I experience this effect on steroids when doing pipeline development where I can never count on the current version of the os or toolchain being used to perform any particular task.  The most recent incarnation of this happened when my 12 year old son asked me to teach him how to deploy his own minecraft server and learn to code.  Stop me if you've heard this one before - he has a Windows machine and I have a Mac and foobar - putting aside whether teaching a kid to program on a Windows machine is child abuse - I was faced with instant problems with pathing related to Terraform.
 
 <br/>
 
@@ -32,11 +32,11 @@ The problem with developing on your local machine and using the product of your 
 
 <br/>
 
-The corresponding <Link href={containerTrainingGithub} target="_blank">github repo</Link> is the single best resource I have found for leaning and teacing about containers and I highly recommend it.  Take the time to learn how to build the slides and you will realize just what an invaluable resource this really is.
+The corresponding <Link href={containerTrainingGithub} target="_blank">github repo</Link> is the single best resource I have found for learning about and teaching others about the container ecosystem and I highly recommend it.  Take the time to learn how to build the slides and you will realize just what an invaluable resource this really is.
 
 <br/>
 
-We can see in these four images how the problem of distributing code across multiple hardware creates problems and how the shipping indutry is a great analogy.  Ultimately we need a way to encapsulate our cide with it's configuration and dependencies in a reliable way that can be executed anywhere.
+We can see in these four images how the problem of deploying code across multiple hardware domains creates problems and how the shipping industry is a great analogy.  Ultimately we need a way to encapsulate our code with it's configuration and dependencies in a reliable way that can be executed anywhere.
 
 <br/>
 
@@ -63,53 +63,83 @@ Using <Link href={docker} target="_blank">Docker</Link>, or <Link href={dockerAl
 
 <br/>
 
-Most importantly it gives you a way to define your development environment as code so when you share it with someone else or come back to it 6 months later you don't have to try and figure out what the magic state of your machine was when you created it.
+Most importantly it gives you a way to define your development environment as code so when you share it with someone else or come back to it 6 months later you don't have to try and figure out what the magic state of your machine was when you created it.  Given the simplicity of doing it I am often surprised by how little I see people doing it.  Just recently I needed to add some code to a cli built with Go and cobra and was struck by the extensive documentation on how to set up you local environment.  One dockerfile and one docker-compose file and 5 minutes later no developer should ever have to suffer "the set up" again.  Run docker-compose run --rm magicgocli and proceed with your brilliance future developer.
+
+<Image p={4} verticalAlign='middle' src="/images/4/youarewelcome.png" />
 
 <br/>
 
 Some examples of how I use this in my own life include:
 
 ##### This blog:
-    I use github as I showed in <Link href="/post/1/" target="_blank">my first post</Link>.  When I want to work on a post locally I don't want to be dependent on what machine I'm on or what the configuration was the last time I used it so I use a simple docker run command to stand up my local environment:
+
+I use github pages to serve this blog as I showed in <Link href="/post/1/" target="_blank">my first post</Link>.  When I want to work on a post locally I don't want to be dependent on what machine I'm on or what the configuration was the last time I used it so I use a simple docker-compose file that allows me to run ``` docker-compose run --rm blog``` whenever I need to stand up my local environment.  The compose file allows me to keep my run command short and looks like this:
 
 ```go
-docker run
--v `pwd`:/mnt
---workdir /mnt
--p 4000:3000
--i -t node:15.12.0-buster /bin/bash -c "npm install -g nodemon; npm install; nodemon -d 30 -P 10000 --watch src start"
+version: "3.9"
+
+services:
+  blog:
+    image: node:15.12.0-buster
+    working_dir: /mnt
+    command: bash -c "npm install -g nodemon; npm install; nodemon --watch src start"
+    volumes:
+      - .:/mnt
+      - /mnt/node_modules
+    ports:
+      - "4000:3000"
 ```
 
-If we decompose this command we can see a lot of super cool stuff going on.  Running top to bottom we have <Link href={dockerRun} target="_blank">docker run</Link> described by docker as:
-
-> Docker runs processes in isolated containers. A container is a process which runs on a host. The host may be local or remote. When an operator executes docker run, the container process that runs is isolated in that it has its own file system, its own networking, and its own isolated process tree separate from the host.
-
-After that comes one of the things I love most about Docker, -v, which mounts my local git repository to the container as part of its file system.  This has two crucially useful side effects.
-
-- Anything I do inside the container that needs to be preserved, such as npm install that would write to package json, is written to my local directory.
-- Any changes I make to my source files locally via my IDE are written to the file system inside the container.
-
-Next comes --workdir which sets the working directory and allows me to determine the context for when I enter the container and where any commands I issue will be executed.
-
-Then we have -p which maps a local port to a container port.  In this case I am saying use my local port 4000 to route to the container port 3000.  This is super handy when we have multiple container services running that all use the same code base and configuration.
-
-The last line starts with the -i and -t options which means run this container interactively so I can watch whats going on in my terminal as commands and requests are executed.  The image I use to start my container is defined by <Link href={dockerNode} target="_blank">node:15.12.0-buster</Link> which gives me both an image created by the NodeJS team and pins it to a specific version.  Lastly we have the command I want to run which says globally install nodemon then do npm install and finally start a development server with nodemon and watch for file changes as I develop.
+If we decompose this file we can see a lot of super cool stuff going on.  Running top to bottom we have:
+ - services: blog which defines the name of my service
+ - image which fetches the exact node version I want from Docker hub
+ - working_dir that sets the context for commands and where I will land inside the container
+ - command which using the -c option allows me to do my installs and start the development server with nodemon
+ - After that comes one of the things I love most about Docker, volumes, which mounts my local git repository to the container as part of its file system.  This has two crucially useful side effects:
+ -- Anything I do inside the container that needs to be preserved, such as npm install that would write to package json, is written to my local directory.
+ -- Any changes I make to my source files locally via my IDE are written to the file system inside the container because they are the same thing! 💥
+ - Last is ports which maps a local port to a container port.  In this case I am saying use my local port 4000 to route to the container port 3000.  This is super handy when we have multiple container services running that all use the same code base and configuration.
 
 ##### Terraform
 Similarly for Terraform I can use their officially maintained image to execute my local code by starting an interactive container mounted to a directory
 
 <Image p={4} verticalAlign='middle' src="/images/4/finder.png" />
 
+Here I use docker-compose with a Dockerfile to tweak the base image for my purposes by making directories to mount various things to that I want to use:
+
 ```
-docker run
---entrypoint /bin/sh
--v `pwd`:/mnt
---workdir /mnt/peering/terraform_vpc_peering
--i -t  hashicorp/terraform:0.14.8
+FROM hashicorp/terraform:0.14.8
+RUN mkdir /keys
+RUN mkdir /api
+RUN mkdir /react
+RUN chmod -R 400 /keys
 ```
 
+Then compose file looks like:
+
+```go
+version: "3.9"
+
+services:
+  devenv:
+    build:
+      context: .
+      dockerfile: devEnv.dockerfile
+    working_dir: /mnt
+    entrypoint: /bin/sh
+    volumes:
+      - .:/mnt
+      - ~/.ssh:/keys
+      - ~/arthurProjects/goapi:/api
+      - ~/arthurProjects/simpleReactWithApi:/react
+```
+
+What is even cooler is that after starting my container I can exec in with multiple sessions using ```docker exec -it 19a9 /bin/sh``` to perform terraform tasks on different directories simultaneously!
+
+<Image p={4} verticalAlign='middle' src="/images/4/multiplesessions.png" />
+
 ##### GoApi
-In a more complex scenario when I want to run multiple API endpoint locally to test some microservices I can use <Link href={dockerCompose} target="_blank">docker compose</Link>to define multiple conatainer instances and start them as a group using docker-compose up.  Here I create a docker-compose.yml file that mounts the same source code (volumes) to 3 separate containers (api1, api2, api3) using the same base image (golang:1.16.2-buster) from the Go team and map the container port (1323) to different host ports (3140, 3150, 3160).
+In a more complex scenario when I want to run multiple API endpoint locally to test some microservices I can use <Link href={dockerCompose} target="_blank">docker compose</Link>to define multiple container instances and start them as a group using docker-compose up.  Here I create a docker-compose.yml file that mounts the same source code (volumes) to 3 separate containers (api1, api2, api3) using the same base image (golang:1.16.2-buster) from the Go team and map the container port (1323) to different host ports (3140, 3150, 3160).
 
 ```go
 version: "3.9"

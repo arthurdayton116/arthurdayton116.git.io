@@ -5,6 +5,7 @@ const blog1 = lazy(() => importMDX('../blogs/1/index.mdx'))
 const blog2 = lazy(() => importMDX('../blogs/2/index.mdx'))
 const blog3 = lazy(() => importMDX('../blogs/3/index.mdx'))
 const blog4 = lazy(() => importMDX('../blogs/4/index.mdx'))
+const blog5 = lazy(() => importMDX('../blogs/5/index.mdx'))
 
 const blogContent = (id) => {
     switch(id) {
@@ -16,6 +17,8 @@ const blogContent = (id) => {
             return blog3;
         case 4:
             return blog4;
+        case 5:
+            return blog5;
         default:
             return 'YOU FORGOT TO ADD BLOG TO Blog.MDX.js'
     }
