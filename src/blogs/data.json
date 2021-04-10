@@ -43,5 +43,23 @@
     "posted": "2021-03-29",
     "lastUpdated": "021-03-29",
     "technologies": ["Docker", "Terraform", "AWS"]
+  },
+  {
+    "id": 6,
+    "title": "AWS VPC Flowlogs",
+    "body": "Here comes some information",
+    "postLink": "../blogs/6",
+    "posted": "2021-03-29",
+    "lastUpdated": "021-03-29",
+    "technologies": ["Docker", "Terraform", "AWS"]
+  },
+  {
+    "id": 7,
+    "title": "AWS VPC Peering",
+    "body": "Here comes some information",
+    "postLink": "../blogs/7",
+    "posted": "2021-03-29",
+    "lastUpdated": "021-03-29",
+    "technologies": ["Docker", "Terraform", "AWS"]
   }
 ]
