@@ -4,6 +4,11 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 main branch contains deployed build code for gh pages and daCode branch has the code used to create it
 
+https://wolovim.medium.com/deploying-create-react-app-to-s3-or-cloudfront-48dae4ce0af
+
+https://medium.com/avmconsulting-blog/automate-static-website-deployment-from-github-to-s3-using-aws-codepipeline-16acca25ebc1
+
+
 ## Docker
 From the root of repository run this:
 
@@ -14,6 +19,9 @@ docker run \
 -p 4000:3000 \
 -i -t node:15.12.0-buster /bin/bash -c "npm install -g nodemon; npm install; nodemon -d 30 -P 10000 --watch src start"
 ```
+
+docker-compose run --rm blog
+
 
 ## Available Scripts
 

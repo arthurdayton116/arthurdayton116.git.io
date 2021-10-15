@@ -9,5 +9,5 @@
     ],
     "@babel/react"
   ],
-  "plugins": ["macros"]
+  "plugins": ["macros","@emotion"]
 }

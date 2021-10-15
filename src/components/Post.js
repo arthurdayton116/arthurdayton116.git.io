@@ -6,15 +6,19 @@ import CustomCodeBlock from "../components/CodeBlock";
 import {useTheme} from "@emotion/react";
 import {postData}  from '../blogs/data';
 import NoMatch from '../components/NoMatch'
+import Comments from '../components/Comments'
 
 export const blogIssue = "https://github.com/arthurdayton116/arthurdayton116.github.io/issues/new"
 export const awsTFIssue = "https://github.com/arthurdayton116/aws-terraform/issues/new"
 
+// Post component - renders individual blog posts
 export const Post = (props) => {
     const theme = useTheme()
+    // dynamic size arrays for different form factors
     const mlArr = [0,2,4]
     const plArr = [0,2,3]
 
+    // margins bases of form factor
     const codeBlockSx={
         pt: mlArr,
         pb: mlArr,
@@ -22,6 +26,7 @@ export const Post = (props) => {
         fontSize: ['.75em','1.5em','1.5em'],
     }
 
+    // react components in place of MDX tags
     const components = {
         pre: props => <div {...props} />,
         code: props => <Box sx={codeBlockSx}><CustomCodeBlock {...props} /></Box>,
@@ -36,16 +41,24 @@ export const Post = (props) => {
         </ol>
     }
 
+    // Gets post number
     const pathArr = props.history.location.pathname.split('/').filter(function (el) {
         return el !== "";
     });
 
+    // console.log("pathArr", pathArr)
+
+    // extract post number from end of array
     const dataIndex = pathArr[pathArr.length-1]
+
+    // get post data from state property
     const post = (typeof(props.history.location.state) != 'undefined') ? props.history.location.state.post : postData(dataIndex)
 
+    // Blog content and images
     const Content = post ? blogContent(post.id) : ''
     const Images = post ? blogImages(post.id) : ''
 
+    // Tech referenced in post
     const TechText = (props) => {
         let returnVal = 'Tech: '
         props.arr.map(
@@ -79,7 +92,9 @@ export const Post = (props) => {
                 </Box>
                 </Box>
         </Box>
+        <Comments postID={post.id}/>
     </Box>
+
   )
   else
    return (<NoMatch/>)

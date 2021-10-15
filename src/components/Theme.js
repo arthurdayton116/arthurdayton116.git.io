@@ -90,16 +90,28 @@ export default {
         primary: '#007bff',
         background: '#e9ecf5',
     },
+    textArea: {
+        fontFamily: primaryFontFamily,
+    },
     buttons: {
-        primary: {
-            color: 'blue',
-            bg: 'primary',
-        },
-        outline: {
-            color: 'primary',
-            bg: 'transparent',
-            boxShadow: 'inset 0 0 0 2px'
-        },
+        background: primarybackground,
+        text: primarytext,
+        ':hover': {
+            color: "black",
+            background: "white",
+            borderRadius: 9,
+            border: "2px solid black",
+            fontWeight: 900,
+        }
+        // primary: {
+        //     color: 'blue',
+        //     bg: 'primary',
+        // },
+        // outline: {
+        //     color: 'primary',
+        //     bg: 'transparent',
+        //     boxShadow: 'inset 0 0 0 2px'
+        // },
     },
     variants : {
         avatar: {
