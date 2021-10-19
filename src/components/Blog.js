@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {Box, Heading} from 'rebass';
 import data from '../blogs/data.json';
 import {useTheme} from "@emotion/react";
-const maxPostNumber = 5
+const maxPostNumber = 6
 
 export const Blogs = () => {
     const theme = useTheme()
