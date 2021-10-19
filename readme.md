@@ -8,6 +8,7 @@ https://wolovim.medium.com/deploying-create-react-app-to-s3-or-cloudfront-48dae4
 
 https://medium.com/avmconsulting-blog/automate-static-website-deployment-from-github-to-s3-using-aws-codepipeline-16acca25ebc1
 
+# TODO - clean up this page 
 
 ## Docker
 From the root of repository run this:
